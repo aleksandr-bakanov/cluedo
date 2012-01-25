@@ -1,0 +1,4 @@
+Hello. Sorry for my English. Here I try to build a server of Cluedo
+game. The rules will be described later. Actualy there are many mods
+of this game, so I will realise one of them. Technicaly it must be
+multi-thread server based on TCP/IP protocol and writen on C++.
