@@ -1,0 +1,7 @@
+Here is protocol of server-client conversation.
+========================================================================
+    Server side commands
+========================================================================
+1   - the first command which server send to client after creating
+    Player object. Right after send this command player thread blocks
+    in a read() function.

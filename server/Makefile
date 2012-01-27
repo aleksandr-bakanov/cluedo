@@ -1,4 +1,7 @@
-OBJECTS = obj/CluedoMain.o obj/Player.o obj/Room.o obj/RoomManager.o
+INC = src/include
+
+OBJECTS = obj/CluedoMain.o obj/Player.o obj/Room.o \
+		  obj/RoomManager.o obj/BytesConverter.o
 
 all:
 	mkdir -p obj
@@ -7,17 +10,20 @@ all:
 cluedo: $(OBJECTS)
 	g++ -ggdb $(OBJECTS) -lpthread -o cluedo
 
-obj/CluedoMain.o: src/CluedoMain.cpp src/include/CluedoMain.hpp
+obj/CluedoMain.o: src/CluedoMain.cpp $(INC)/CluedoMain.hpp
 	g++ -c -ggdb src/CluedoMain.cpp -o obj/CluedoMain.o
 
-obj/Player.o: src/Player.cpp src/include/Player.hpp
+obj/Player.o: src/Player.cpp $(INC)/Player.hpp
 	g++ -c -ggdb src/Player.cpp -o obj/Player.o
 
-obj/Room.o: src/Room.cpp src/include/Room.hpp
+obj/Room.o: src/Room.cpp $(INC)/Room.hpp
 	g++ -c -ggdb src/Room.cpp -o obj/Room.o
 
-obj/RoomManager.o: src/RoomManager.cpp src/include/RoomManager.hpp
+obj/RoomManager.o: src/RoomManager.cpp $(INC)/RoomManager.hpp
 	g++ -c -ggdb src/RoomManager.cpp -o obj/RoomManager.o
+
+obj/BytesConverter.o: src/BytesConverter.cpp $(INC)/BytesConverter.hpp
+	g++ -c -ggdb src/BytesConverter.cpp -o obj/BytesConverter.o
 
 clean:
 	rm -r obj/ cluedo

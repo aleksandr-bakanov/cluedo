@@ -42,7 +42,7 @@ configureServerSocket(int& sockfd, struct sockaddr_in& addr)
     if (sockfd < 0) 
         error("ERROR opening socket");
 
-    bzero((char *) &addr, sizeof(addr));
+    memset((char *) &addr, 0, sizeof(addr));
 
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = INADDR_ANY;
