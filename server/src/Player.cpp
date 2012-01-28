@@ -1,5 +1,6 @@
 #include "include/Player.hpp"
 #include "include/BytesConverter.hpp"
+#include "include/RoomManager.hpp"
 
 Player::Player(int socketDescriptor)
 {
@@ -42,9 +43,10 @@ Player::parse()
     if (curRecvPos - SHORT_SIZE >= comSize)
     {
         curRecvPos = SHORT_SIZE;
-        int comId = BCgetShort(recvBuf, curRecvPos);
+        short comId = BCgetShort(recvBuf, curRecvPos);
         switch (comId)
         {
+            case C_ENTER_ROOM: enterRoomHandler(); break;
             default: break;
         }
         curRecvPos = 0;
@@ -68,6 +70,29 @@ Player::sendReadyCommand()
 {
     short cmdSize = SHORT_SIZE;
     short cmdId = S_READY;
+    memcpy(sendBuf, &cmdSize, SHORT_SIZE);
+    memcpy(sendBuf, &cmdId, SHORT_SIZE);
+    sendData(SHORT_SIZE * 2);
+}
+
+void 
+Player::enterRoomHandler()
+{
+    char type = BCgetChar(recvBuf, curRecvPos);
+    if (type >= 3 && type <= 6)
+    {
+        RoomManager * rm = (RoomManager *)roomManager;
+        bool success = rm->addPlayerIntoRoom((void *)this, type);
+        if (!success)
+            sendNoRoom();
+    }
+}
+
+void
+Player::sendNoRoom()
+{
+    short cmdSize = SHORT_SIZE;
+    short cmdId = S_NO_ROOM;
     memcpy(sendBuf, &cmdSize, SHORT_SIZE);
     memcpy(sendBuf, &cmdId, SHORT_SIZE);
     sendData(SHORT_SIZE * 2);

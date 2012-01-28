@@ -32,6 +32,8 @@ public:
 //======================================================================
     // Pointer to RoomManager object
     void * roomManager;
+    // Pointer to current Room object
+    void * room;
     
 private:
 //======================================================================
@@ -57,6 +59,11 @@ private:
      * server is ready to receive commands from client.
      */
     void sendReadyCommand();
+    
+    // C_ENTER_ROOM command handler.
+    void enterRoomHandler();
+    // Send S_NO_ROOM to client.
+    void sendNoRoom();
 //======================================================================
 //  Fields
 //======================================================================
@@ -76,6 +83,8 @@ private:
 const int RECV_BUF_SIZE = 256;
 // Server side command ids.
 const short S_READY = 1;
+const short S_NO_ROOM = 3;
 // Client side command ids.
+const short C_ENTER_ROOM = 2;
 
 #endif /* _PLAYER_ */

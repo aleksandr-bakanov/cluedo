@@ -14,11 +14,11 @@ union BCUnion
     bool boolean;
 };
 
-const int INT_SIZE = sizeof(int);
-const int SHORT_SIZE = sizeof(short);
-const int CHAR_SIZE = sizeof(char);
-const int BOOL_SIZE = sizeof(bool);
-const int FLOAT_SIZE = sizeof(float);
+const int INT_SIZE = 4;
+const int SHORT_SIZE = 2;
+const int CHAR_SIZE = 1;
+const int BOOL_SIZE = 1;
+const int FLOAT_SIZE = 4;
 
 /**
  * These functions converts bytes sequences into different formats.

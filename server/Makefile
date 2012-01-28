@@ -8,7 +8,7 @@ all:
 	make cluedo
 
 cluedo: $(OBJECTS)
-	g++ -ggdb $(OBJECTS) -lpthread -o cluedo
+	g++ -ggdb obj/* -lpthread -o cluedo
 
 obj/CluedoMain.o: src/CluedoMain.cpp $(INC)/CluedoMain.hpp
 	g++ -c -ggdb src/CluedoMain.cpp -o obj/CluedoMain.o

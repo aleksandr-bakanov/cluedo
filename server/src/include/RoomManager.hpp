@@ -2,6 +2,7 @@
 #define _ROOM_MANAGER_
 
 #include <pthread.h>
+#include <string.h>
 
 /**
  * RoomManager class control room creating and deleting process,
@@ -24,16 +25,12 @@ public:
      * Function looks for room of choisen type in which player could
      * be added, add player into it and return pointer to this room.
      * If there are no free room function creates one and place player
-     * into it. If room can not be created function returns NULL
-     * pointer.
+     * into it. If room can not be created function returns false.
+     * On success function returns true.
      */
-    void * addPlayerIntoRoom(void * player, char type);
+    bool addPlayerIntoRoom(void * player, char type);
 //======================================================================
 //  Fields
-//======================================================================
-    
-//======================================================================
-//  Consts
 //======================================================================
     
 private:
@@ -41,10 +38,34 @@ private:
 //  Methods
 //======================================================================
     /**
-     * Function creates arrays of pointers to Room object and fill
-     * them by NULL pointers.
+     * Function creates arrays of pointers to Room object and then
+     * creates Room objects.
      */
     void initRooms();
+    
+    /**
+     * Function returns pointer to not full filled room of specified
+     * type. If there isn't room it will be created. If room cannot be
+     * created the function returns NULL pointer.
+     */
+    void * getFreeRoom(char type);
+    
+    /**
+     * Function creates room of specified type and return pointer to it.
+     */
+    void * createRoom(char type);
+    
+    /**
+     * Function returns index of maximum filled room of specified type.
+     * If there is no free room function returns -1.
+     */
+    void * getMaxFilledRoom(char type);
+    
+    /**
+     * Function returns pointer to array of rooms of specified type,
+     * also it assign maximum index in this array to maxP.
+     */
+    void ** getRooms(char type);
 //======================================================================
 //  Fields
 //======================================================================

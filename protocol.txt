@@ -1,7 +1,34 @@
 Here is protocol of server-client conversation.
 ========================================================================
+    Common information
+========================================================================
+All commands begins by short integer (2 bytes) which represent length
+of remaining part of command. Then must be command id also represented
+in two bytes folowed by params (zero or more) specified for each 
+command.
+For example command C_ENTER_ROOM:
+ 2  2  1    <-- length of fields in bytes
+[3][2][5]   <-- values into fields
+This command mean that client want to enter into room for five players.
+
+========================================================================
     Server side commands
 ========================================================================
-1   - the first command which server send to client after creating
-    Player object. Right after send this command player thread blocks
-    in a read() function.
+1   - S_READY. The first command which server send to client after
+    creating Player object. Right after send this command player thread
+    blocks in a read() function.
+
+3   - S_NO_ROOM. Command sends to client if there are no free rooms of
+    type requested into C_ENTER_ROOM command.
+
+========================================================================
+    Client side commands
+========================================================================
+2   - C_ENTER_ROOM. Client want to enter into the room with specified
+    players count. Server looks for maximum filled such room and place
+    player into it. If there is no free place in desired room server
+    create one. If server cannot create room it send to client command
+    S_NO_ROOM.
+    Params:
+    count_players [1]   - desired count of players in room. The number
+        into square brackets means count of bytes for this param.
