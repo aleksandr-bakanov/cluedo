@@ -7,7 +7,8 @@ Room::Room(char type)
     totalPlayers = type;
     Player ** pl = (Player **)players;
     pl = new Player*[totalPlayers];
-    memset(players, 0, sizeof(pl));
+    for (int i = 0; i < totalPlayers; i++)
+        pl[i] = NULL;
     players = (void **)pl;
     isOpen = true;
 }
@@ -24,6 +25,7 @@ Room::addPlayer(void * player)
     Player ** pls = (Player **)players;
     Player * pl = (Player *)player;
     pls[getEmptyIndex()] = pl;
+    pl->room = (void *)this;
     curPlayersCount++;
     if (curPlayersCount == totalPlayers)
         startGame();
@@ -34,6 +36,7 @@ Room::removePlayer(void * player)
 {
     Player ** pls = (Player **)players;
     Player * pl = (Player *)player;
+    pl->room = NULL;
     for (int i = 0; i < totalPlayers; i++)
         if (pls[i] == pl)
             pls[i] = NULL;

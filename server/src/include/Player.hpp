@@ -34,6 +34,15 @@ public:
     void * roomManager;
     // Pointer to current Room object
     void * room;
+    // Guest id
+    char guest;
+    // Guest coordinates
+    char x;
+    char y;
+    // Current appartments
+    char app;
+    // Cards
+    char cards[50];
     
 private:
 //======================================================================

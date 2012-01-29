@@ -1,6 +1,7 @@
 #include "include/Player.hpp"
 #include "include/BytesConverter.hpp"
 #include "include/RoomManager.hpp"
+#include "include/Room.hpp"
 
 Player::Player(int socketDescriptor)
 {
@@ -8,11 +9,18 @@ Player::Player(int socketDescriptor)
     curRecvPos = 0;
     memset(recvBuf, 0, RECV_BUF_SIZE);
     memset(sendBuf, 0, RECV_BUF_SIZE);
+    room = NULL;
     cout << "Player::Player(" << socket << ")" << endl;
 }
 
 Player::~Player()
 {
+    if (room)
+    {
+        Room * r = (Room *)room;
+        r->removePlayer((void *)this);
+        room = NULL;
+    }
     close(socket);
     cout << "Player::~Player()" << endl;
 }
@@ -20,7 +28,6 @@ Player::~Player()
 void
 Player::run()
 {
-    cout << "Player.run()" << endl;
     sendReadyCommand();
     while (true)
     {
@@ -71,7 +78,7 @@ Player::sendReadyCommand()
     short cmdSize = SHORT_SIZE;
     short cmdId = S_READY;
     memcpy(sendBuf, &cmdSize, SHORT_SIZE);
-    memcpy(sendBuf, &cmdId, SHORT_SIZE);
+    memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
     sendData(SHORT_SIZE * 2);
 }
 
@@ -94,6 +101,6 @@ Player::sendNoRoom()
     short cmdSize = SHORT_SIZE;
     short cmdId = S_NO_ROOM;
     memcpy(sendBuf, &cmdSize, SHORT_SIZE);
-    memcpy(sendBuf, &cmdId, SHORT_SIZE);
+    memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
     sendData(SHORT_SIZE * 2);
 }

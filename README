@@ -3,5 +3,5 @@ game. The rules will be described later. Actualy there are many mods
 of this game, so I will realise one of them. Technicaly it must be
 multi-thread server based on TCP protocol and writen on C++.
 
-Also in future will be created simple client based on Java, Python of
+Also in future will be created simple client based on Java, Python or
 Flash platform.
