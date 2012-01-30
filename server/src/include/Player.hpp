@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <iostream>
+#include <cmath>
 using namespace std;
 
 /**
@@ -32,6 +33,19 @@ public:
      * Function resets game params such as guest, x, y, app and cards.
      */
     void resetGameInfo();
+    
+    /**
+     * Function send to client available guest ids.
+     * @param   guestMap    bit map: 00100101 - miss Scarlett,
+     *                      mrs. White and professor Plum are available
+     */
+    void sendAvailableGuests(char guestMap);
+    
+    /**
+     * Function send to player result of processing his C_CHOOSE_GUEST
+     * request.
+     */
+    void sendGuestChooseResult(char guestId, bool result);
 //======================================================================
 //  Fields
 //======================================================================
@@ -80,6 +94,8 @@ private:
     void sendNoRoom();
     // C_LEAVE_ROOM command handler.
     void leaveRoomHandler();
+    // C_CHOOSE_GUEST command handler.
+    void chooseGuestHandler();
 //======================================================================
 //  Fields
 //======================================================================
@@ -100,8 +116,11 @@ const int RECV_BUF_SIZE = 256;
 // Server side command ids.
 const short S_READY = 1;
 const short S_NO_ROOM = 3;
+const short S_AVAILABLE_GUESTS = 5;
+const short S_GUEST_CHOOSE_RESULT = 7;
 // Client side command ids.
 const short C_ENTER_ROOM = 2;
 const short C_LEAVE_ROOM = 4;
+const short C_CHOOSE_GUEST = 6;
 
 #endif /* _PLAYER_ */

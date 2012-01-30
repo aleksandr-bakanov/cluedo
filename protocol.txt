@@ -21,14 +21,40 @@ This command mean that client want to enter into room for five players.
 3   - S_NO_ROOM. Command sends to client if there are no free rooms of
     type requested into C_ENTER_ROOM command.
 
+5   - S_AVAILABLE_GUESTS. When client enter to room server send to him
+    list of available to choose guests. For get count of ids in command
+    just look at the command length in the first two bytes. Example:
+    command length = 6, command id occupy two bytes, so there are four
+    bytes for guest ids, and this mean that there are four guest
+    available.
+    Params:
+    guest_ids [n]   - each id occupy one byte. Here is ids:
+        Miss Scarlett   - 1
+        Colonel Mustard - 2
+        Mrs. White      - 3
+        Reverend Green  - 4
+        Mrs. Peacock    - 5
+        Professor Plum  - 6
+    For example:
+    [1][3][6] - this mean that miss Scarlett, mrs. White and professor
+        Plum are available.
+
+7   - S_GUEST_CHOOSE_RESULT. This command send to client after his
+    C_CHOOSE_GUEST request. If result is true player successfuly choose
+    requested guest.
+    Params:
+    (result / guest_id) [1]   - result is stored into seventh bit:
+        01000010    - colonel Mustard is available
+        00000010    - colonel Mustard isn't available
+
 ========================================================================
     Client side commands
 ========================================================================
 2   - C_ENTER_ROOM. Client want to enter into the room with specified
-    players count. Server looks for maximum filled such room and place
-    player into it. If there is no free place in desired room server
-    create one. If server cannot create room it send to client command
-    S_NO_ROOM.
+    players count. Server looks for maximum filled desired room and
+    place player into it. After placing server send to player command
+    S_AVAILABLE_GUESTS. If there is no free desired room server send to
+    client command S_NO_ROOM.
     Params:
     count_players [1]   - desired count of players in room. The number
         into square brackets means count of bytes for this param.
@@ -37,3 +63,11 @@ This command mean that client want to enter into room for five players.
     room, nothing happens. If client was in room, he leave it and cannot
     return. At this moment server simulate player actions in the game:
     loses the turns and shows cards if they are suspect.
+    
+6   - C_CHOOSE_GUEST. Client want to choose guest. Command will be
+    process by server only if players is in room. On success server
+    send S_AVAILABLE_GUESTS for all players in the room (update
+    information). After process this command server send to client
+    S_GUEST_CHOOSE_RESULT.
+    Params:
+    guest_id [1]

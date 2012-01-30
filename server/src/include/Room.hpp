@@ -1,6 +1,9 @@
 #ifndef _ROOM_
 #define _ROOM_
 
+#include <pthread.h>
+using namespace std;
+
 /**
  * Room class is a main controller of a game process.
  */
@@ -29,6 +32,11 @@ public:
      */
     void removePlayer(void * player);
     
+    /**
+     * Function process player's choose guest request. Returns true
+     * if player successfuly choose guest.
+     */
+    bool chooseGuest(char guestId);
 //======================================================================
 //  Fields
 //======================================================================
@@ -55,6 +63,12 @@ private:
     // Array of players pointers.
     void ** players;
     char totalPlayers;
+    // Bit map of the available guests.
+    // 00100101 - miss Scarlett, mrs. White and professor Plum
+    // are available.
+    char availableGuests;
+    // Mutexes
+    pthread_mutex_t chooseGuestMutex;
 };
 
 // Guest constants
