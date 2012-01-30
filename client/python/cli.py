@@ -11,16 +11,14 @@ print 'Received', repr(data)
 er = u'\x03\x00\x02\x00\x03'
 s.send(er)
 
-data = s.recv(1024);
-print 'Received', repr(data)
+#data = s.recv(1024);
+#print 'Received', repr(data)
 
-er = u'\x03\x00\x06\x00\x03'
-s.send(er)
+#er = u'\x03\x00\x06\x00\x04'
+#s.send(er)
 
-data = s.recv(1024);
-print 'Received', repr(data)
-
-data = s.recv(1024);
-print 'Received', repr(data)
+while True:
+    data = s.recv(1024);
+    print 'Received', repr(data)
 
 s.close()

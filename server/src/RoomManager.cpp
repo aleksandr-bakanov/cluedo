@@ -3,6 +3,7 @@
 
 RoomManager::RoomManager()
 {
+    srand(time(NULL));
     addPlayerMutex = PTHREAD_MUTEX_INITIALIZER;
     MAX_ONE_TYPE_ROOMS = 10;
     initRooms();

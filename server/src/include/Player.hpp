@@ -55,6 +55,8 @@ public:
     void * room;
     // Guest id
     char guest;
+    // True if player in game now.
+    bool inGame;
     // Guest coordinates
     char x;
     char y;

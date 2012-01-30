@@ -2,6 +2,8 @@
 #define _ROOM_
 
 #include <pthread.h>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 /**
@@ -37,11 +39,20 @@ public:
      * if player successfuly choose guest.
      */
     bool chooseGuest(char guestId);
+    
+    /**
+     * Function check whether all players in room choose guest.
+     * If not, function set remained guest to players randomly.
+     * Then the game starts.
+     */
+    void checkGuestDistribution();
 //======================================================================
 //  Fields
 //======================================================================
     bool isOpen;
     char curPlayersCount;
+    // Index of player who makes his move at this moment.
+    char curPlayerIndex;
     
 private:
 //======================================================================
@@ -53,10 +64,26 @@ private:
     void startGame();
     
     /**
+     * Function shuffles player's pointers in array.
+     */
+    void shufflePlayers();
+    
+    /**
+     * Function sets inGame, x and y coordinates to each player.
+     */
+    void setPlayersStartParams();
+    
+    /**
+     * Function sets start coordinates based on player's guest.
+     */
+    void setStartCoordinates(char &x, char &y, char guest);
+    
+    /**
      * Function returns index of the first NULL pointer into players
      * array.
      */
     int getEmptyIndex();
+    
 //======================================================================
 //  Fields
 //======================================================================
@@ -70,6 +97,9 @@ private:
     // Mutexes
     pthread_mutex_t chooseGuestMutex;
 };
+
+// Timer (waiting) functions
+void * waitCheckGuestDistribution(void * ptr);
 
 // Guest constants
 const char GT_SCARLETT = 1;

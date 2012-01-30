@@ -10,6 +10,7 @@ Player::Player(int socketDescriptor)
     memset(recvBuf, 0, RECV_BUF_SIZE);
     memset(sendBuf, 0, RECV_BUF_SIZE);
     room = NULL;
+    inGame = false;
     cout << "Player::Player(" << socket << ")" << endl;
 }
 
