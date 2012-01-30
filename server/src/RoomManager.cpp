@@ -1,11 +1,9 @@
 #include "include/RoomManager.hpp"
 #include "include/Room.hpp"
 
-// Mutexes
-pthread_mutex_t addPlayerMutex = PTHREAD_MUTEX_INITIALIZER;
-
 RoomManager::RoomManager()
 {
+    addPlayerMutex = PTHREAD_MUTEX_INITIALIZER;
     MAX_ONE_TYPE_ROOMS = 10;
     initRooms();
 }

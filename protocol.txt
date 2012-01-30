@@ -32,3 +32,8 @@ This command mean that client want to enter into room for five players.
     Params:
     count_players [1]   - desired count of players in room. The number
         into square brackets means count of bytes for this param.
+
+4   - C_LEAVE_ROOM. Client want to leave room. If client wasn't in the
+    room, nothing happens. If client was in room, he leave it and cannot
+    return. At this moment server simulate player actions in the game:
+    loses the turns and shows cards if they are suspect.

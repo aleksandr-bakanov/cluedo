@@ -80,6 +80,8 @@ private:
 //======================================================================
     // Maximum count of rooms of one type.
     short MAX_ONE_TYPE_ROOMS;
+    // Mutexes
+    pthread_mutex_t addPlayerMutex;
 };
 
 #endif /* _ROOM_MANAGER_ */

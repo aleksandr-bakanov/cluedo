@@ -27,6 +27,11 @@ public:
      * this function return.
      */
     void run();
+    
+    /**
+     * Function resets game params such as guest, x, y, app and cards.
+     */
+    void resetGameInfo();
 //======================================================================
 //  Fields
 //======================================================================
@@ -73,6 +78,8 @@ private:
     void enterRoomHandler();
     // Send S_NO_ROOM to client.
     void sendNoRoom();
+    // C_LEAVE_ROOM command handler.
+    void leaveRoomHandler();
 //======================================================================
 //  Fields
 //======================================================================
@@ -95,5 +102,6 @@ const short S_READY = 1;
 const short S_NO_ROOM = 3;
 // Client side command ids.
 const short C_ENTER_ROOM = 2;
+const short C_LEAVE_ROOM = 4;
 
 #endif /* _PLAYER_ */

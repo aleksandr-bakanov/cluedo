@@ -15,12 +15,7 @@ Player::Player(int socketDescriptor)
 
 Player::~Player()
 {
-    if (room)
-    {
-        Room * r = (Room *)room;
-        r->removePlayer((void *)this);
-        room = NULL;
-    }
+    leaveRoomHandler();
     close(socket);
     cout << "Player::~Player()" << endl;
 }
@@ -54,6 +49,7 @@ Player::parse()
         switch (comId)
         {
             case C_ENTER_ROOM: enterRoomHandler(); break;
+            case C_LEAVE_ROOM: leaveRoomHandler(); break;
             default: break;
         }
         curRecvPos = 0;
@@ -103,4 +99,22 @@ Player::sendNoRoom()
     memcpy(sendBuf, &cmdSize, SHORT_SIZE);
     memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
     sendData(SHORT_SIZE * 2);
+}
+
+void 
+Player::resetGameInfo()
+{
+    guest = x = y = app = 0;
+    for (int i = 0; i < 50; i++)
+        cards[i] = 0;
+}
+
+void 
+Player::leaveRoomHandler()
+{
+    if (room)
+    {
+        Room * r = (Room *)room;
+        r->removePlayer((void *)this);
+    }
 }
