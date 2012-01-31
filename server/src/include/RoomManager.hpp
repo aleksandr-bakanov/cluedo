@@ -3,6 +3,9 @@
 
 #include <pthread.h>
 #include <string.h>
+#include <fstream>
+#include <iostream>
+using namespace std;
 
 /**
  * RoomManager class control room creating and deleting process,
@@ -42,6 +45,12 @@ private:
      * creates Room objects.
      */
     void initRooms();
+    
+    /**
+     * Function read map from files/map file and store it into
+     * Room::map static variable.
+     */
+    void initMap();
     
     /**
      * Function returns pointer to not full filled room of specified

@@ -53,6 +53,7 @@ public:
     char curPlayersCount;
     // Index of player who makes his move at this moment.
     char curPlayerIndex;
+    static char ** map;
     
 private:
 //======================================================================
@@ -119,6 +120,15 @@ const char WP_BAT = 7;
 const char WP_DUMBBELL = 8;
 const char WP_POISON = 9;
 // Appartments constants
-const char AP_ = 1;
+const char AP_KITCHEN = 1;          // k
+const char AP_BALLROOM = 2;         // B
+const char AP_CONSERVATORY = 3;     // C
+const char AP_DINING_ROOM = 4;      // d
+const char AP_CELLAR = 5;           // c
+const char AP_BILLIARD_ROOM = 6;    // b
+const char AP_LIBRARY = 7;          // L
+const char AP_LOUNGE = 8;           // l
+const char AP_HALL = 9;             // h
+const char AP_STUDY = 2;            // s
 
 #endif /* _ROOM_ */

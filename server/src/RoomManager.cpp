@@ -7,6 +7,7 @@ RoomManager::RoomManager()
     addPlayerMutex = PTHREAD_MUTEX_INITIALIZER;
     MAX_ONE_TYPE_ROOMS = 10;
     initRooms();
+    initMap();
 }
 
 RoomManager::~RoomManager()
@@ -87,4 +88,18 @@ RoomManager::getRooms(char type)
     else if (type == 6) 
         rArr = (Room **)sixPlayerRooms;
     return (void **)rArr;
+}
+
+void
+RoomManager::initMap()
+{
+    Room::map = new char*[25];
+    ifstream infile;
+    infile.open ("files/map");
+    for (int i = 0; i < 25; i++)
+    {
+        Room::map[i] = new char[25];
+        infile.getline(Room::map[i], 25);
+    }
+    infile.close();
 }

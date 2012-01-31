@@ -1,6 +1,8 @@
 #include "include/Room.hpp"
 #include "include/Player.hpp"
 
+char ** Room::map = NULL;
+
 Room::Room(char type)
 {
     curPlayersCount = 0;
