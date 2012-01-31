@@ -109,6 +109,7 @@ Player::resetGameInfo()
     guest = x = y = app = 0;
     for (int i = 0; i < MAX_CARDS; i++)
         cards[i] = 0;
+    myTurn = false;
 }
 
 void 
@@ -177,4 +178,19 @@ Player::addCard(char card)
             return i;
         }
     return char(-1);
+}
+
+void
+Player::sendStartInfo()
+{
+    short cmdId = S_START_GAME_INFO;
+    memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
+    sendBuf[4] = guest;
+    sendBuf[5] = x;
+    sendBuf[6] = y;
+    short cmdSize = 5;
+    for (int i = 0; cards[i]; i++)
+        sendBuf[++cmdSize + 1] = cards[i];
+    memcpy(sendBuf, &cmdSize, SHORT_SIZE);
+    sendData(cmdSize + SHORT_SIZE);
 }

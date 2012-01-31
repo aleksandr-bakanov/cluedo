@@ -85,6 +85,8 @@ private:
      */
     void dealCards();
     
+    void nextMove();
+    
     /**
      * Function returns index of the first NULL pointer into players
      * array.
@@ -101,6 +103,11 @@ private:
      * Function inits duplicates of player's cards.
      */
     void initDuplicateCards();
+    
+    /**
+     * Function sends to players start game information.
+     */
+    void sendStartInfo();
     
 //======================================================================
 //  Fields

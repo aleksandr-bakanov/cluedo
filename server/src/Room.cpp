@@ -94,6 +94,7 @@ Room::startGame()
     curPlayerIndex = 0;
     shuffleGuests();
     dealCards();
+    sendStartInfo();
     // This mutex was locked in addPlayer function when condition
     // (curPlayersCount == totalPlayers) generates true.
     pthread_mutex_unlock(&removePlayerMutex);
@@ -226,7 +227,7 @@ Room::dealCards()
     cards[SECRET_WP - 1] = cards[count-- - 1];
     cards[SECRET_AP - 1] = cards[count-- - 1];
     Player * pl;
-    char index;
+    char index, in;
     while (count)
     {
         for (i = 0; i < 6 && count; i++)
@@ -234,10 +235,11 @@ Room::dealCards()
             if (guestsOrder[i] > 10)
             {
                 pl = (Player *)getPlayerByGuest(guestsOrder[i] - 10);
-                card = (rand() % count) + 1;
+                in = rand() % count;
+                card = cards[in];
                 index = pl->addCard(card);
                 dupCards[guestsOrder[i] - 11][index] = card;
-                cards[card - 1] = cards[count-- - 1];
+                cards[in] = cards[count-- - 1];
             }
         }
     }
@@ -246,17 +248,14 @@ Room::dealCards()
 void *
 Room::getPlayerByGuest(char guest)
 {
-    pthread_mutex_lock(&removePlayerMutex);
     Player ** pls = (Player **)players;
     Player * pl;
     for (char i = 0; i < totalPlayers; i++)
         if (pl = pls[i])
             if (pl->guest == guest)
             {
-                pthread_mutex_unlock(&removePlayerMutex);
                 return (void *)pl;
             }
-    pthread_mutex_unlock(&removePlayerMutex);
     return (void *)NULL;
 }
 
@@ -281,4 +280,20 @@ Room::initDuplicateCards()
         else
             dupCards[i] = NULL;
     }
+}
+
+void
+Room::sendStartInfo()
+{
+    Player ** pls = (Player **)players;
+    Player * pl;
+    for (int i = 0; i < totalPlayers; i++)
+        if (pl = pls[i])
+            pl->sendStartInfo();
+}
+
+void
+Room::nextMove()
+{
+    
 }

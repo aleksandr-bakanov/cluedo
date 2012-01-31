@@ -1,5 +1,11 @@
 #include "include/CluedoMain.hpp"
 
+static void
+sigpipeHandler(int sig, siginfo_t *si, void *unused)
+{
+    cout << "SIGPIPE: " << long(si->si_addr) << endl;
+}
+
 int 
 main()
 {
@@ -8,6 +14,7 @@ main()
     struct sockaddr_in serverAddr, cli_addr;
     
     configureServerSocket(serverSocket, serverAddr);
+    configureSignals();
     
     RoomManager * roomManager = new RoomManager();
     struct PlayerStartParams * ptr;
@@ -70,4 +77,15 @@ error(const char * msg)
 {
     cerr << msg << endl;
     exit(1);
+}
+
+void
+configureSignals()
+{
+    struct sigaction sa;
+    sa.sa_flags = SA_SIGINFO;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_sigaction = sigpipeHandler;
+    if (sigaction(SIGPIPE, &sa, NULL) == -1)
+        error("sigaction error");
 }

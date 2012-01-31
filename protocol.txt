@@ -47,6 +47,14 @@ This command mean that client want to enter into room for five players.
         01000010    - colonel Mustard is available
         00000010    - colonel Mustard isn't available
 
+9   - S_START_GAME_INFO. Sending information on start game to each
+    player. Command contains player's guest, coordinates and cards.
+    Params:
+    guest_id [1]
+    x_coordinate [1]
+    y_coordinate [1]
+    cards_ids [n]
+
 ========================================================================
     Client side commands
 ========================================================================

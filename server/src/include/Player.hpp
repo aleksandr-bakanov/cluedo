@@ -52,6 +52,11 @@ public:
      * of added card.
      */
     char addCard(char card);
+    
+    /**
+     * Function sends to client start game information.
+     */
+    void sendStartInfo();
 //======================================================================
 //  Fields
 //======================================================================
@@ -72,6 +77,8 @@ public:
     char cards[8];
     // Intrigues
     char intrigues[10];
+    // True if now that player's moving.
+    bool myTurn;
     
 private:
 //======================================================================
@@ -122,7 +129,7 @@ private:
 //======================================================================
 //  Consts
 //======================================================================
-const int MAX_CARDS = 8;
+const int MAX_CARDS = 10;
 const int MAX_INTRIGUES = 10;
 const int RECV_BUF_SIZE = 256;
 // Server side command ids.
@@ -130,6 +137,7 @@ const short S_READY = 1;
 const short S_NO_ROOM = 3;
 const short S_AVAILABLE_GUESTS = 5;
 const short S_GUEST_CHOOSE_RESULT = 7;
+const short S_START_GAME_INFO = 9;
 // Client side command ids.
 const short C_ENTER_ROOM = 2;
 const short C_LEAVE_ROOM = 4;

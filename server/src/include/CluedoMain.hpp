@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
+#include <signal.h>
 
 #include "RoomManager.hpp"
 #include "Player.hpp"
@@ -37,5 +38,10 @@ void * createAndRunPlayer(void * ptr);
  * Function prints error message and finish program by exit() call.
  */
 void error(const char *);
+
+/**
+ * Function configures signal handlers.
+ */
+void configureSignals();
 
 #endif /* _CLUEDO_MAIN_ */
