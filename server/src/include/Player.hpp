@@ -46,6 +46,12 @@ public:
      * request.
      */
     void sendGuestChooseResult(char guestId, bool result);
+    
+    /**
+     * Function adds specified card into the cards array. Returns index
+     * of added card.
+     */
+    char addCard(char card);
 //======================================================================
 //  Fields
 //======================================================================
@@ -63,7 +69,9 @@ public:
     // Current appartments
     char app;
     // Cards
-    char cards[50];
+    char cards[8];
+    // Intrigues
+    char intrigues[10];
     
 private:
 //======================================================================
@@ -114,6 +122,8 @@ private:
 //======================================================================
 //  Consts
 //======================================================================
+const int MAX_CARDS = 8;
+const int MAX_INTRIGUES = 10;
 const int RECV_BUF_SIZE = 256;
 // Server side command ids.
 const short S_READY = 1;

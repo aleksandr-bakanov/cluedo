@@ -14,7 +14,9 @@ Room::Room(char type)
     players = (void **)pl;
     isOpen = true;
     availableGuests = 63; // 00111111 - all guests available
+    dupCards = NULL;
     chooseGuestMutex = PTHREAD_MUTEX_INITIALIZER;
+    removePlayerMutex = PTHREAD_MUTEX_INITIALIZER;
 }
 
 Room::~Room()
@@ -36,6 +38,8 @@ Room::addPlayer(void * player)
     
     if (curPlayersCount == totalPlayers)
     {
+        // This mutex will be unlocked after finish startGame function.
+        pthread_mutex_lock(&removePlayerMutex);
         isOpen = false;
         pthread_t t;
         pthread_create( &t, NULL, waitCheckGuestDistribution,
@@ -47,6 +51,7 @@ Room::addPlayer(void * player)
 void 
 Room::removePlayer(void * player)
 {
+    pthread_mutex_lock(&removePlayerMutex);
     Player ** pls = (Player **)players;
     Player * pl = (Player *)player;
     pl->room = NULL;
@@ -69,6 +74,7 @@ Room::removePlayer(void * player)
         }
     }
     curPlayersCount--;
+    pthread_mutex_unlock(&removePlayerMutex);
 }
 
 int 
@@ -84,8 +90,13 @@ Room::startGame()
 {
     cout << "Start game" << endl;
     setPlayersStartParams();
-    shufflePlayers();
+    initDuplicateCards();
     curPlayerIndex = 0;
+    shuffleGuests();
+    dealCards();
+    // This mutex was locked in addPlayer function when condition
+    // (curPlayersCount == totalPlayers) generates true.
+    pthread_mutex_unlock(&removePlayerMutex);
 }
 
 bool 
@@ -144,16 +155,22 @@ Room::checkGuestDistribution()
 }
 
 void
-Room::shufflePlayers()
+Room::shuffleGuests()
 {
-    void * pl;
+    char gt;
     int index;
-    for (int i = totalPlayers; i > 1; i--)
+    for (index = 0; index < 6; index++)
+    {
+        guestsOrder[index] = index + 1;
+        if (getPlayerByGuest(index + 1))
+            guestsOrder[index] += 10;
+    }
+    for (int i = 6; i > 1; i--)
     {
         index = rand() % i;
-        pl = players[index];
-        players[index] = players[i - 1];
-        players[i - 1] = pl;
+        gt = guestsOrder[index];
+        guestsOrder[index] = guestsOrder[i - 1];
+        guestsOrder[i - 1] = gt;
     }
 }
 
@@ -173,5 +190,95 @@ Room::setPlayersStartParams()
 void
 Room::setStartCoordinates(char &x, char &y, char guest)
 {
-    x = y = 0;
+    if (guest == GT_SCARLETT) {
+        x = 0; y = 17;
+    }
+    else if (guest == GT_GREEN) {
+        x = 9; y = 0;
+    }
+    else if (guest == GT_MUSTARD) {
+        x = 14; y = 0;
+    }
+    else if (guest == GT_PEACOCK) {
+        x = 23; y = 6;
+    }
+    else if (guest == GT_PLUM) {
+        x = 23; y = 19;
+    }
+    else if (guest == GT_WHITE) {
+        x = 7; y = 24;
+    }
+}
+
+void
+Room::dealCards()
+{
+    char count = 25;
+    char card;
+    char cards[count];
+    int i;
+    for (i = 0; i < count; i++)
+        cards[i] = i + 1;
+    SECRET_GT = (rand() % 6) + 1;
+    SECRET_WP = (rand() % 9) + 7;
+    SECRET_AP = (rand() % 10) + 16;
+    cards[SECRET_GT - 1] = cards[count-- - 1];
+    cards[SECRET_WP - 1] = cards[count-- - 1];
+    cards[SECRET_AP - 1] = cards[count-- - 1];
+    Player * pl;
+    char index;
+    while (count)
+    {
+        for (i = 0; i < 6 && count; i++)
+        {
+            if (guestsOrder[i] > 10)
+            {
+                pl = (Player *)getPlayerByGuest(guestsOrder[i] - 10);
+                card = (rand() % count) + 1;
+                index = pl->addCard(card);
+                dupCards[guestsOrder[i] - 11][index] = card;
+                cards[card - 1] = cards[count-- - 1];
+            }
+        }
+    }
+}
+
+void *
+Room::getPlayerByGuest(char guest)
+{
+    pthread_mutex_lock(&removePlayerMutex);
+    Player ** pls = (Player **)players;
+    Player * pl;
+    for (char i = 0; i < totalPlayers; i++)
+        if (pl = pls[i])
+            if (pl->guest == guest)
+            {
+                pthread_mutex_unlock(&removePlayerMutex);
+                return (void *)pl;
+            }
+    pthread_mutex_unlock(&removePlayerMutex);
+    return (void *)NULL;
+}
+
+void
+Room::initDuplicateCards()
+{
+    char i;
+    if (dupCards)
+    {
+        for (i = 0; i < 6; i++)
+            if (dupCards[i])
+                delete [] dupCards[i];
+        delete [] dupCards;
+        dupCards = NULL;
+    }
+    dupCards = new char*[6];
+    Player * pl;
+    for (i = 0; i < 6; i++)
+    {
+        if (pl = (Player *)getPlayerByGuest(i + 1))
+            dupCards[i] = new char[MAX_CARDS];
+        else
+            dupCards[i] = NULL;
+    }
 }

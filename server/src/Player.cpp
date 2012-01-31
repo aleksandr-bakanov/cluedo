@@ -107,7 +107,7 @@ void
 Player::resetGameInfo()
 {
     guest = x = y = app = 0;
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < MAX_CARDS; i++)
         cards[i] = 0;
 }
 
@@ -165,4 +165,16 @@ Player::sendGuestChooseResult(char guestId, bool result)
     if (result) res |= char(64);
     sendBuf[4] = res;
     sendData(5);
+}
+
+char
+Player::addCard(char card)
+{
+    for (char i = 0; i < MAX_CARDS; i++)
+        if (!cards[i])
+        {
+            cards[i] = card;
+            return i;
+        }
+    return char(-1);
 }

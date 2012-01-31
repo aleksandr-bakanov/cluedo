@@ -16,6 +16,9 @@ RoomManager::~RoomManager()
     delete [] fourPlayerRooms;
     delete [] fivePlayerRooms;
     delete [] sixPlayerRooms;
+    for (int i = 0; i < 25; i++)
+        delete [] Room::map[i];
+    delete [] Room::map;
 }
 
 void
