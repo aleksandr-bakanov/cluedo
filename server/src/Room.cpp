@@ -209,7 +209,7 @@ Room::setStartCoordinates(char &x, char &y, char guest)
 void
 Room::dealCards()
 {
-    char count = 25;
+    char count = 24;
     char card;
     char cards[count];
     int i;
@@ -354,6 +354,7 @@ Room::guestMakeStep(void * player, char x, char y)
             {
                 pl->x = x;
                 pl->y = y;
+                pl->app = getAppByCoordinates(x, y);
                 c != ':' ? pl->steps = 0 : pl->steps--;
                 success = true;
             }
@@ -369,7 +370,33 @@ Room::guestMakeStep(void * player, char x, char y)
     pthread_mutex_unlock(&removePlayerMutex);
 }
 
-void *
+char
+Room::getAppByCoordinates(char x, char y)
+{
+    char r = 0;
+    if (x == 4 && y == 6)
+        r = AP_KITCHEN;
+    else if ((x == 8 && y == 5) || (x == 15 && y == 5) ||
+             (x == 9 && y == 7) || (x == 14 && y == 7))
+        r = AP_BALLROOM;
+    else if (x == 19 && y == 5)
+        r = AP_CONSERVATORY;
+    else if ((x == 7 && y == 12) || (x == 6 && y == 15))
+        r = AP_DINING_ROOM;
+    else if ((x == 18 && y == 9) || (x == 22 && y == 12))
+        r = AP_BILLIARD_ROOM;
+    else if ((x == 20 && y == 14) || (x == 17 && y == 16))
+        r = AP_LIBRARY;
+    else if (x == 6 && y == 19)
+        r = AP_LOUNGE;
+    else if (((x == 11 || x == 12) && y == 18) || (x == 14 && y == 20))
+        r = AP_HALL;
+    else if (x == 17 && y == 21)
+        r = AP_STUDY;
+    return r;
+}
+
+void
 waitCheckGuestDistribution(void * ptr)
 {
     sleep(5);

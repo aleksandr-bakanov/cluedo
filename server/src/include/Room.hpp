@@ -130,6 +130,12 @@ private:
      */
     void sendStartInfo();
     
+    /**
+     * Function returns appartment id. If there is no appartment on
+     * these coordinates return 0.
+     */
+    char getAppByCoordinates(char x, char y);
+    
 //======================================================================
 //  Fields
 //======================================================================
@@ -185,11 +191,10 @@ const char AP_KITCHEN = 16;          // k
 const char AP_BALLROOM = 17;         // B
 const char AP_CONSERVATORY = 18;     // C
 const char AP_DINING_ROOM = 19;      // d
-const char AP_CELLAR = 20;           // c
-const char AP_BILLIARD_ROOM = 21;    // b
-const char AP_LIBRARY = 22;          // L
-const char AP_LOUNGE = 23;           // l
-const char AP_HALL = 24;             // h
-const char AP_STUDY = 25;            // s
+const char AP_BILLIARD_ROOM = 20;    // b
+const char AP_LIBRARY = 21;          // L
+const char AP_LOUNGE = 22;           // l
+const char AP_HALL = 23;             // h
+const char AP_STUDY = 24;            // s
 
 #endif /* _ROOM_ */
