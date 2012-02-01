@@ -55,6 +55,22 @@ This command mean that client want to enter into room for five players.
     y_coordinate [1]
     cards_ids [n]
 
+11  - S_MAKE_STEP. Sends if one of the guest move on some coordinates
+    on the map. Note about the map coordinates: point (0,0) is in left
+    up corner, x is a horizontal axis, y - vertical one.
+    Params:
+    guest_id [1]
+    x_coordinate [1]
+    y_coordinate [1]
+
+13  - S_NEXT_MOVE. Command says which guest is moving now and how much
+    move points he has. If second_die is 1 player get the card
+    of intrigue.
+    Params:
+    guest_id [1]
+    first_die [1]
+    second_die [1]
+
 ========================================================================
     Client side commands
 ========================================================================
@@ -79,3 +95,10 @@ This command mean that client want to enter into room for five players.
     S_GUEST_CHOOSE_RESULT.
     Params:
     guest_id [1]
+
+8   - C_MAKE_STEP. Client want go to specified coordinates on map. If
+    he can do it according to rules server send to all players command
+    S_MAKE_STEP. If he cannot do it nothing happens.
+    Params:
+    x_coordinate [1]
+    y_coordinate [1]

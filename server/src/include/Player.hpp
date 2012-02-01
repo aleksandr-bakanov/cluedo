@@ -57,6 +57,16 @@ public:
      * Function sends to client start game information.
      */
     void sendStartInfo();
+    
+    /**
+     * Function sends next move info, such as guest id and the dice.
+     */
+    void sendNextMove(char guestId, char firstDie, char secondDie);
+    
+    /**
+     * Function sends S_MAKE_STEP command.
+     */
+    void sendGuestMakeStep(char guestId, char x, char y);
 //======================================================================
 //  Fields
 //======================================================================
@@ -79,6 +89,8 @@ public:
     char intrigues[10];
     // True if now that player's moving.
     bool myTurn;
+    // Count of available steps.
+    char steps;
     
 private:
 //======================================================================
@@ -113,6 +125,8 @@ private:
     void leaveRoomHandler();
     // C_CHOOSE_GUEST command handler.
     void chooseGuestHandler();
+    // C_MAKE_STEP command handler.
+    void makeStepHandler();
 //======================================================================
 //  Fields
 //======================================================================
@@ -138,9 +152,12 @@ const short S_NO_ROOM = 3;
 const short S_AVAILABLE_GUESTS = 5;
 const short S_GUEST_CHOOSE_RESULT = 7;
 const short S_START_GAME_INFO = 9;
+const short S_MAKE_STEP = 11;
+const short S_NEXT_MOVE = 13;
 // Client side command ids.
 const short C_ENTER_ROOM = 2;
 const short C_LEAVE_ROOM = 4;
 const short C_CHOOSE_GUEST = 6;
+const short C_MAKE_STEP = 8;
 
 #endif /* _PLAYER_ */

@@ -35,6 +35,12 @@ public:
     void removePlayer(void * player);
     
     /**
+     * Function starts next move (or turn). Sends to all players which
+     * guest is moving now and how much steps he has.
+     */
+    void nextMove();
+    
+    /**
      * Function process player's choose guest request. Returns true
      * if player successfuly choose guest.
      */
@@ -46,13 +52,25 @@ public:
      * Then the game starts.
      */
     void checkGuestDistribution();
+    
+    /**
+     * Function move guest on the specified coordinates if it's
+     * possible. On success function says to all players about this
+     * moving.
+     */
+    void guestMakeStep(void * player, char x, char y);
 //======================================================================
 //  Fields
 //======================================================================
     bool isOpen;
     char curPlayersCount;
-    // Index of player who makes his move at this moment.
-    char curPlayerIndex;
+    // Index of guest who makes his move at this moment.
+    char curGuestIndex;
+    // This variable increments each nextMove call. When in nextMove
+    // creates timer thread it save current value of curMove. After
+    // sleep it compare saved value with current curMove value. If
+    // they are equals nextMove calls from timer thread.
+    int curMove;
     static char ** map;
     
 private:
@@ -63,6 +81,11 @@ private:
      * Function starts the game process.
      */
     void startGame();
+    
+    /**
+     * Function ends game.
+     */
+    void endGame();
     
     /**
      * Function shuffles player's pointers in array.
@@ -84,8 +107,6 @@ private:
      * to the players.
      */
     void dealCards();
-    
-    void nextMove();
     
     /**
      * Function returns index of the first NULL pointer into players
@@ -129,6 +150,7 @@ private:
     char ** dupCards;
     // Order of guest's moves
     char guestsOrder[6];
+    
     // Mutexes
     pthread_mutex_t chooseGuestMutex;
     pthread_mutex_t removePlayerMutex;
@@ -136,6 +158,10 @@ private:
 
 // Timer (waiting) functions
 void * waitCheckGuestDistribution(void * ptr);
+void * waitNextMove(void * ptr);
+
+const char MAX_GUESTS = 6;
+const char ONE_TURN_DELAY = 5;
 
 // Guest constants
 const char GT_SCARLETT = 1;

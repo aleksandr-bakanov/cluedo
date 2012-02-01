@@ -10,7 +10,7 @@ Player::Player(int socketDescriptor)
     memset(recvBuf, 0, RECV_BUF_SIZE);
     memset(sendBuf, 0, RECV_BUF_SIZE);
     room = NULL;
-    inGame = false;
+    resetGameInfo();
     cout << "Player::Player(" << socket << ")" << endl;
 }
 
@@ -52,6 +52,7 @@ Player::parse()
             case C_ENTER_ROOM: enterRoomHandler(); break;
             case C_LEAVE_ROOM: leaveRoomHandler(); break;
             case C_CHOOSE_GUEST: chooseGuestHandler(); break;
+            case C_MAKE_STEP: makeStepHandler(); break;
             default: break;
         }
         curRecvPos = 0;
@@ -106,10 +107,11 @@ Player::sendNoRoom()
 void 
 Player::resetGameInfo()
 {
-    guest = x = y = app = 0;
+    guest = x = y = app = steps = 0;
     for (int i = 0; i < MAX_CARDS; i++)
         cards[i] = 0;
     myTurn = false;
+    inGame = false;
 }
 
 void 
@@ -129,7 +131,7 @@ Player::sendAvailableGuests(char guestMap)
     int pos = 4;
     short cmdId = S_AVAILABLE_GUESTS;
     memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < MAX_GUESTS; i++)
         if (guestMap & char(pow(2, i)))
             sendBuf[pos++] = char(i + 1);
     cmdSize = SHORT_SIZE + pos - 4;
@@ -143,7 +145,7 @@ Player::chooseGuestHandler()
     if (room && !guest)
     {
         char id = BCgetChar(recvBuf, curRecvPos);
-        if (id >= 1 && id <= 6)
+        if (id >= 1 && id <= MAX_GUESTS)
         {
             Room * r = (Room *)room;
             bool result = r->chooseGuest(id);
@@ -193,4 +195,42 @@ Player::sendStartInfo()
         sendBuf[++cmdSize + 1] = cards[i];
     memcpy(sendBuf, &cmdSize, SHORT_SIZE);
     sendData(cmdSize + SHORT_SIZE);
+}
+
+void
+Player::sendNextMove(char guestId, char firstDie, char secondDie)
+{
+    short cmdSize = 5;
+    short cmdId = S_NEXT_MOVE;
+    memcpy(sendBuf, &cmdSize, SHORT_SIZE);
+    memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
+    sendBuf[4] = guestId;
+    sendBuf[5] = firstDie;
+    sendBuf[6] = secondDie;
+    sendData(7);
+}
+
+void
+Player::makeStepHandler()
+{
+    if (inGame && myTurn && steps)
+    {
+        char x = BCgetChar(recvBuf, curRecvPos);
+        char y = BCgetChar(recvBuf, curRecvPos);
+        Room * r = (Room *)room;
+        r->guestMakeStep((void *)this, x, y);
+    }
+}
+
+void
+Player::sendGuestMakeStep(char guestId, char x, char y)
+{
+    short cmdSize = 5;
+    short cmdId = S_NEXT_MOVE;
+    memcpy(sendBuf, &cmdSize, SHORT_SIZE);
+    memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
+    sendBuf[4] = guestId;
+    sendBuf[5] = x;
+    sendBuf[6] = y;
+    sendData(7);
 }
