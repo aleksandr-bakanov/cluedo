@@ -107,11 +107,10 @@ Player::sendNoRoom()
 void 
 Player::resetGameInfo()
 {
-    guest = x = y = app = steps = 0;
+    guest = x = y = app = lastAskedApp = steps = 0;
     for (int i = 0; i < MAX_CARDS; i++)
         cards[i] = 0;
-    myTurn = false;
-    inGame = false;
+    myTurn = inGame = mustAsk = false;
 }
 
 void 
@@ -213,7 +212,7 @@ Player::sendNextMove(char guestId, char firstDie, char secondDie)
 void
 Player::makeStepHandler()
 {
-    if (inGame && myTurn && steps)
+    if (inGame && myTurn && steps && !mustAsk)
     {
         char x = BCgetChar(recvBuf, curRecvPos);
         char y = BCgetChar(recvBuf, curRecvPos);

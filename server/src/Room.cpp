@@ -347,15 +347,20 @@ Room::guestMakeStep(void * player, char x, char y)
         char pc = Room::map[pl->y][pl->x];
         if (c != '#')
         {
+            char nextApp = getAppByCoordinates(x, y);
             if ((pl->x == x && abs(pl->y - y) == 1) ||
                 (pl->y == y && abs(pl->x - x) == 1) ||
                 (pc == 'k' && c == 's') || (pc == 's' && c == 'k') ||
-                (pc == 'l' && c == 'C') || (pc == 'C' && c == 'l'))
+                (pc == 'l' && c == 'C') || (pc == 'C' && c == 'l') &&
+                !(c != ":" && (nextApp == pl->lastAskedApp)))
             {
                 pl->x = x;
                 pl->y = y;
-                pl->app = getAppByCoordinates(x, y);
+                pl->app = nextApp;
+                pl->mustAsk = bool(nextApp);
                 c != ':' ? pl->steps = 0 : pl->steps--;
+                if (c == ':' && pl->steps == 0)
+                    pl->lastAskedApp = 0;
                 success = true;
             }
         }

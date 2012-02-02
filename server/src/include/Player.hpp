@@ -83,6 +83,7 @@ public:
     char y;
     // Current appartments
     char app;
+    char lastAskedApp;
     // Cards
     char cards[8];
     // Intrigues
@@ -91,6 +92,9 @@ public:
     bool myTurn;
     // Count of available steps.
     char steps;
+    // Set to true when guest enter room. Player can't move if mustAsk
+    // is true.
+    bool mustAsk;
     
 private:
 //======================================================================
