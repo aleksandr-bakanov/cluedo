@@ -365,21 +365,26 @@ Player::aStar(char x, char y, char tox, char toy, vector<char> &v)
         }
         if (exist(tox, toy, open) >= 0)
             isPathFound = true;
+        if (open.size() == 0)
+            break;
     }
     v.clear();
-    char rx = tox;
-    char ry = toy;
-    int ind;
-    while (!(rx == x && ry == y))
+    if (isPathFound)
     {
-        v.push_back(ry);
-        v.push_back(rx);
-        if ((ind = exist(rx, ry, open)) >= 0)
-            cc = open[ind];
-        else
-            cc = close[exist(rx, ry, close)];
-        rx = cc.px;
-        ry = cc.py;
+        char rx = tox;
+        char ry = toy;
+        int ind;
+        while (!(rx == x && ry == y))
+        {
+            v.push_back(ry);
+            v.push_back(rx);
+            if ((ind = exist(rx, ry, open)) >= 0)
+                cc = open[ind];
+            else
+                cc = close[exist(rx, ry, close)];
+            rx = cc.px;
+            ry = cc.py;
+        }
     }
 }
 
