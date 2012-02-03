@@ -252,4 +252,160 @@ Player::aStar(char x, char y, char tox, char toy, vector<char> &v)
     vector<Cell> close;
     open.clear();
     close.clear();
+    // Add start cell to open list
+    bool isPathFound = false;
+    // cc = currentCell
+    Cell cc;
+    cc.x = x;
+    cc.y = y;
+    cc.g = 0;
+    cc.h = cc.f = abs(x - tox) + abs(y - toy);
+    open.push_back(cc);
+    while (!isPathFound)
+    {
+        int minFCellIndex = minFCell(open);
+        // cc = currentCell
+        cc = open[minFCellIndex];
+        close.push_back(cc);
+        open.erase(open.begin() + minFCellIndex);
+        // ac = addedCell
+        Cell ac;
+        int acIndex;
+        // To left
+        if (cc.x - 1 >= 0 && map[cc.y][cc.x - 1] != '#' &&
+            exist(cc.x - 1, cc.y, close) < 0)
+        {
+            if ((acIndex = exist(cc.x - 1, cc.y, open)) < 0)
+            {
+                ac.x = cc.x - 1; ac.y = cc.y;
+                ac.px = cc.x; ac.py = cc.y;
+                ac.g = cc.g + 10;
+                ac.h = abs(ac.x - tox) + abs(ac.y - toy);
+                ac.f = ac.g + ac.h;
+                open.push_back(ac);
+            }
+            else
+            {
+                ac = open[acIndex];
+                if (ac.g > (cc.g + 10))
+                {
+                    ac.px = cc.x; ac.py = cc.y;
+                    ac.g = cc.g + 10; ac.f = ac.g + ac.h;
+                }
+            }
+        }
+        // To right
+        if (cc.x + 1 < 24 && map[cc.y][cc.x + 1] != '#' &&
+            exist(cc.x + 1, cc.y, close) < 0)
+        {
+            if ((acIndex = exist(cc.x + 1, cc.y, open)) < 0)
+            {
+                ac.x = cc.x + 1; ac.y = cc.y;
+                ac.px = cc.x; ac.py = cc.y;
+                ac.g = cc.g + 10;
+                ac.h = abs(ac.x - tox) + abs(ac.y - toy);
+                ac.f = ac.g + ac.h;
+                open.push_back(ac);
+            }
+            else
+            {
+                ac = open[acIndex];
+                if (ac.g > (cc.g + 10))
+                {
+                    ac.px = cc.x; ac.py = cc.y;
+                    ac.g = cc.g + 10; ac.f = ac.g + ac.h;
+                }
+            }
+        }
+        // To up
+        if (cc.y - 1 >= 0 && map[cc.y - 1][cc.x] != '#' &&
+            exist(cc.x, cc.y - 1, close) < 0)
+        {
+            if ((acIndex = exist(cc.x, cc.y - 1, open)) < 0)
+            {
+                ac.x = cc.x; ac.y = cc.y - 1;
+                ac.px = cc.x; ac.py = cc.y;
+                ac.g = cc.g + 10;
+                ac.h = abs(ac.x - tox) + abs(ac.y - toy);
+                ac.f = ac.g + ac.h;
+                open.push_back(ac);
+            }
+            else
+            {
+                ac = open[acIndex];
+                if (ac.g > (cc.g + 10))
+                {
+                    ac.px = cc.x; ac.py = cc.y;
+                    ac.g = cc.g + 10; ac.f = ac.g + ac.h;
+                }
+            }
+        }
+        // To down
+        if (cc.y + 1 < 25 && map[cc.y + 1][cc.x] != '#' &&
+            exist(cc.x, cc.y + 1, close) < 0)
+        {
+            if ((acIndex = exist(cc.x, cc.y + 1, open)) < 0)
+            {
+                ac.x = cc.x; ac.y = cc.y + 1;
+                ac.px = cc.x; ac.py = cc.y;
+                ac.g = cc.g + 10;
+                ac.h = abs(ac.x - tox) + abs(ac.y - toy);
+                ac.f = ac.g + ac.h;
+                open.push_back(ac);
+            }
+            else
+            {
+                ac = open[acIndex];
+                if (ac.g > (cc.g + 10))
+                {
+                    ac.px = cc.x; ac.py = cc.y;
+                    ac.g = cc.g + 10; ac.f = ac.g + ac.h;
+                }
+            }
+        }
+        if (exist(tox, toy, open) >= 0)
+            isPathFound = true;
+    }
+    v.clear();
+    char rx = tox;
+    char ry = toy;
+    int ind;
+    while (!(rx == x && ry == y))
+    {
+        v.push_back(ry);
+        v.push_back(rx);
+        if ((ind = exist(rx, ry, open)) >= 0)
+            cc = open[ind];
+        else
+            cc = close[exist(rx, ry, close)];
+        rx = cc.px;
+        ry = cc.py;
+    }
+}
+
+int
+Player::exist(char x, char y, vector<Cell> &v)
+{
+    int len = v.size();
+    for (int i = 0; i < len; i++)
+        if (x == v[i].x && y == v[i].y)
+            return i;
+    return -1;
+}
+
+int
+Player::minFCell(vector<Cell> &v)
+{
+    int len = v.size();
+    int r = 0;
+    char curF = 100;
+    char nextF;
+    for (int i = 0; i < len; i++) {
+        nextF = v[i].f;
+        if (nextF < curF) {
+            curF = nextF;
+            r = i;
+        }
+    }
+    return r;
 }

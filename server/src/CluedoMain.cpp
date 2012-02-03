@@ -55,8 +55,9 @@ configureServerSocket(int& sockfd, struct sockaddr_in& addr)
     addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_port = htons(7003);
 
-    if (bind(sockfd, (struct sockaddr *) &addr, sizeof(addr)) < 0) 
-        error("ERROR on binding");
+    if (bind(sockfd, (struct sockaddr *) &addr, sizeof(addr)) < 0)
+        error("ERROR binding");
+
 
     listen(sockfd, 128);
 }
