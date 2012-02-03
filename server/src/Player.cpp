@@ -233,3 +233,23 @@ Player::sendGuestMakeStep(char guestId, char x, char y)
     sendBuf[6] = y;
     sendData(7);
 }
+
+void
+Player::aStar(char x, char y, char tox, char toy, vector<char> &v)
+{
+    // Create map copy
+    char map[25][24];
+    char i, j;
+    for (i = 0; i < 25; i++)
+        for (j = 0; j < 24; j++)
+            map[i][j] = Room::map[i][j];
+    char len = (char) v.size();
+    // Add impassible cells.
+    for (i = 0; i < len; i++)
+        map[v[i + 1]][v[i]] = '#';
+    // Creates open and close lists
+    vector<Cell> open;
+    vector<Cell> close;
+    open.clear();
+    close.clear();
+}

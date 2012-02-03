@@ -352,7 +352,7 @@ Room::guestMakeStep(void * player, char x, char y)
                 (pl->y == y && abs(pl->x - x) == 1) ||
                 (pc == 'k' && c == 's') || (pc == 's' && c == 'k') ||
                 (pc == 'l' && c == 'C') || (pc == 'C' && c == 'l') &&
-                !(c != ":" && (nextApp == pl->lastAskedApp)))
+                !(c != ':' && (nextApp == pl->lastAskedApp)))
             {
                 pl->x = x;
                 pl->y = y;
@@ -401,7 +401,7 @@ Room::getAppByCoordinates(char x, char y)
     return r;
 }
 
-void
+void *
 waitCheckGuestDistribution(void * ptr)
 {
     sleep(5);

@@ -5,6 +5,7 @@
 #include <string.h>
 #include <iostream>
 #include <cmath>
+#include <vector>
 using namespace std;
 
 /**
@@ -131,6 +132,16 @@ private:
     void chooseGuestHandler();
     // C_MAKE_STEP command handler.
     void makeStepHandler();
+    
+    /**
+     * A* algotirhm realisation.
+     * @param   x   start coordinates
+     * @param   y
+     * @param   tox end coordinates
+     * @param   toy 
+     * @param   v   result vector
+     */
+    void aStar(char x, char y, char tox, char toy, vector<char> &v);
 //======================================================================
 //  Fields
 //======================================================================
@@ -163,5 +174,19 @@ const short C_ENTER_ROOM = 2;
 const short C_LEAVE_ROOM = 4;
 const short C_CHOOSE_GUEST = 6;
 const short C_MAKE_STEP = 8;
+
+//======================================================================
+//  A-star
+//======================================================================
+struct Cell
+{
+    char x;
+    char y;
+    char px; // parent X
+    char py; // parent Y
+    char f;
+    char g;
+    char h;
+};
 
 #endif /* _PLAYER_ */
