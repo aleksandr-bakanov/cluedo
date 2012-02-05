@@ -79,9 +79,12 @@ public:
     void sendNextMove(char guestId, char firstDie, char secondDie);
     
     /**
-     * Function sends S_MAKE_STEP command.
+     * Function sends S_GUEST_MOVE command.
      */
-    void sendGuestMakeStep(char guestId, char x, char y);
+    void sendGuestMakeMove(char guestId, vector<char> &v);
+    
+    // A* function
+    void aStar(char x, char y, char tox, char toy, vector<char> &v);
 //======================================================================
 //  Fields
 //======================================================================
@@ -144,18 +147,12 @@ private:
     void leaveRoomHandler();
     // C_CHOOSE_GUEST command handler.
     void chooseGuestHandler();
-    // C_MAKE_STEP command handler.
-    void makeStepHandler();
+    // C_GUEST_MOVE command handler.
+    void makeMoveHandler();
+    // C_ASK command handler
+    void askHandler();
     
-    /**
-     * A* algotirhm realisation.
-     * @param   x   start coordinates
-     * @param   y
-     * @param   tox end coordinates
-     * @param   toy 
-     * @param   v   result vector
-     */
-    void aStar(char x, char y, char tox, char toy, vector<char> &v);
+    // A* util functions
     int exist(char x, char y, vector<Cell> &v);
     int minFCell(vector<Cell> &v);
 //======================================================================
@@ -183,12 +180,13 @@ const short S_NO_ROOM = 3;
 const short S_AVAILABLE_GUESTS = 5;
 const short S_GUEST_CHOOSE_RESULT = 7;
 const short S_START_GAME_INFO = 9;
-const short S_MAKE_STEP = 11;
+const short S_GUEST_MOVE = 11;
 const short S_NEXT_MOVE = 13;
 // Client side command ids.
 const short C_ENTER_ROOM = 2;
 const short C_LEAVE_ROOM = 4;
 const short C_CHOOSE_GUEST = 6;
-const short C_MAKE_STEP = 8;
+const short C_GUEST_MOVE = 8;
+const short C_ASK = 10;
 
 #endif /* _PLAYER_ */

@@ -15,6 +15,7 @@ Room::Room(char type)
     isOpen = true;
     availableGuests = 63; // 00111111 - all guests available
     dupCards = NULL;
+    isQuestioning = false;
     chooseGuestMutex = PTHREAD_MUTEX_INITIALIZER;
     removePlayerMutex = PTHREAD_MUTEX_INITIALIZER;
 }
@@ -335,12 +336,15 @@ Room::endGame()
 }
 
 void
-Room::guestMakeStep(void * player, char x, char y)
+Room::guestMakeMove(void * player, char x, char y)
 {
     pthread_mutex_lock(&removePlayerMutex);
     Player * pl = (Player *)player;
     char gt = pl->guest;
     bool success = false;
+    vector<char> v;
+    int i;
+    
     if (x >= 0 && x <= 23 && y >= 0 && y <= 24)
     {
         char c = Room::map[y][x];
@@ -348,29 +352,51 @@ Room::guestMakeStep(void * player, char x, char y)
         if (c != '#')
         {
             char nextApp = getAppByCoordinates(x, y);
-            if ((pl->x == x && abs(pl->y - y) == 1) ||
-                (pl->y == y && abs(pl->x - x) == 1) ||
-                (pc == 'k' && c == 's') || (pc == 's' && c == 'k') ||
-                (pc == 'l' && c == 'C') || (pc == 'C' && c == 'l') &&
-                !(c != ':' && (nextApp == pl->lastAskedApp)))
+            // Secret path
+            if ((pc == 'k' && c == 's') || (pc == 's' && c == 'k') ||
+                (pc == 'l' && c == 'C') || (pc == 'C' && c == 'l'))
             {
-                pl->x = x;
-                pl->y = y;
+                pl->steps = 0;
                 pl->app = nextApp;
-                pl->mustAsk = bool(nextApp);
-                c != ':' ? pl->steps = 0 : pl->steps--;
-                if (c == ':' && pl->steps == 0)
-                    pl->lastAskedApp = 0;
+                pl->mustAsk = true;
                 success = true;
+            }
+            // No secret path
+            else
+            {
+                bool available = true;
+                Player ** pls = (Player **)players;
+                for (i = 0; i < totalPlayers; i++)
+                    if (pl = pls[i])
+                        if (pl->x == x && pl->y == y)
+                            available = false;
+
+                if ((c == ':' && available) ||
+                    (c != ':' && nextApp != pl->lastAskedApp))
+                {
+                    v.clear();
+                    /// TODO: Add into v intrigue cells
+                    pl = (Player *)player;
+                    pl->aStar(pl->x, pl->y, x, y, v);
+                    if (v.size() && (v.size() / 2 <= pl->steps))
+                    {
+                        pl->steps -= v.size() / 2;
+                        pl->app = nextApp;
+                        pl->mustAsk = bool(nextApp);
+                        if (c == ':' && pl->steps == 0)
+                            pl->lastAskedApp = 0;
+                        success = true;
+                    }
+                }
             }
         }
     }
     if (success)
     {
         Player ** pls = (Player **)players;
-        for (int i = 0; i < totalPlayers; i++)
+        for (i = 0; i < totalPlayers; i++)
             if (pl = pls[i])
-                pl->sendGuestMakeStep(gt, x, y);
+                pl->sendGuestMakeMove(gt, v);
     }
     pthread_mutex_unlock(&removePlayerMutex);
 }
@@ -399,6 +425,12 @@ Room::getAppByCoordinates(char x, char y)
     else if (x == 17 && y == 21)
         r = AP_STUDY;
     return r;
+}
+
+void
+Room::playerAsk(void * player, char guest, char weapon)
+{
+    
 }
 
 void *

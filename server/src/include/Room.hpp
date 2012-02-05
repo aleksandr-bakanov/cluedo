@@ -58,19 +58,30 @@ public:
      * possible. On success function says to all players about this
      * moving.
      */
-    void guestMakeStep(void * player, char x, char y);
+    void guestMakeMove(void * player, char x, char y);
+    
+    /**
+     * Player suspect murderer and weapon.
+     */
+    void playerAsk(void * player, char guest, char weapon);
 //======================================================================
 //  Fields
 //======================================================================
     bool isOpen;
     char curPlayersCount;
-    // Index of guest who makes his move at this moment.
+    // Index of the guest who makes his move at this moment.
     char curGuestIndex;
     // This variable increments each nextMove call. When in nextMove
     // creates timer thread it save current value of curMove. After
     // sleep it compare saved value with current curMove value. If
     // they are equals nextMove calls from timer thread.
     int curMove;
+    // True if somebody start suspect someone else. Set to false when
+    // questioning is over.
+    bool isQuestioning;
+    // Index of the guest who must answer now.
+    char curAnswerIndex;
+    // Map
     static char ** map;
     
 private:

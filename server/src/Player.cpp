@@ -52,7 +52,8 @@ Player::parse()
             case C_ENTER_ROOM: enterRoomHandler(); break;
             case C_LEAVE_ROOM: leaveRoomHandler(); break;
             case C_CHOOSE_GUEST: chooseGuestHandler(); break;
-            case C_MAKE_STEP: makeStepHandler(); break;
+            case C_GUEST_MOVE: makeMoveHandler(); break;
+            case C_ASK: askHandler(); break;
             default: break;
         }
         curRecvPos = 0;
@@ -210,28 +211,41 @@ Player::sendNextMove(char guestId, char firstDie, char secondDie)
 }
 
 void
-Player::makeStepHandler()
+Player::makeMoveHandler()
 {
     if (inGame && myTurn && steps && !mustAsk)
     {
         char x = BCgetChar(recvBuf, curRecvPos);
         char y = BCgetChar(recvBuf, curRecvPos);
         Room * r = (Room *)room;
-        r->guestMakeStep((void *)this, x, y);
+        r->guestMakeMove((void *)this, x, y);
     }
 }
 
 void
-Player::sendGuestMakeStep(char guestId, char x, char y)
+Player::sendGuestMakeMove(char guestId, vector<char> &v)
 {
-    short cmdSize = 5;
-    short cmdId = S_NEXT_MOVE;
+    short cmdSize = SHORT_SIZE + 1 + v.size();
+    short cmdId = S_GUEST_MOVE;
     memcpy(sendBuf, &cmdSize, SHORT_SIZE);
     memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
     sendBuf[4] = guestId;
-    sendBuf[5] = x;
-    sendBuf[6] = y;
-    sendData(7);
+    int len = v.size();
+    for (int i = 0, j = len - 1; i < len; i++, j--)
+        sendBuf[i + 5] = v[j];
+    sendData(cmdSize + SHORT_SIZE);
+}
+
+void
+Player::askHandler()
+{
+    if (inGame && myTurn && app && app != lastAskedApp)
+    {
+        char gt = BCgetChar(recvBuf, curRecvPos);
+        char wp = BCgetChar(recvBuf, curRecvPos);
+        if (gt >= 0 && gt < 7 && wp >= 7 && wp < 16)
+            ((Room *)room)->playerAsk(this, gt, wp);
+    }
 }
 
 void
