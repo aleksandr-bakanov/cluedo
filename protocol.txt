@@ -81,10 +81,10 @@ This command mean that client want to enter into room for five players.
 17  - S_PLAYER_ANSWER. Some player answer on suspect.
     Params:
     answered_guest [1]
-    card [1] - optionally, sends only to asked player.
+    card [1] - optionally, sends only to the enquirer.
 
 19  - S_WAIT_ANSWER. Command means that server starts to wait answer
-    by specified guest, specified count of seconds.
+    from specified guest, specified count of seconds.
     Params:
     guest_id [1]
     seconds [1]
@@ -95,7 +95,16 @@ This command mean that client want to enter into room for five players.
     room [1]
     guest [1]
     weapon [1]
-    
+
+23  - S_GUESS_SECRET. Some guest try to guess secret cards. If command
+    contains only guest id, this mean that player make a mistake.
+    Else it contains also secret cards, so in this case guest is a
+    winner.
+    Params:
+    guest [1]
+    room [1]
+    guest [1]
+    weapon [1]
 
 ========================================================================
     Client side commands
@@ -140,7 +149,7 @@ This command mean that client want to enter into room for five players.
     Params:
     card [1]
 
-14  - C_KNOW_SECRET. Player suspect secret cards. If he is right, he
+14  - C_GUESS_SECRET. Player suspect secret cards. If he is right, he
     win the game. Else he lose and server starts to rule his guest.
     Params:
     room [1]

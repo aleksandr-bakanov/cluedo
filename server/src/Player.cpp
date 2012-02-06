@@ -86,6 +86,7 @@ Player::sendReadyCommand()
 void 
 Player::enterRoomHandler()
 {
+    leaveRoomHandler();
     char type = BCgetChar(recvBuf, curRecvPos);
     if (type >= 3 && type <= 6)
     {
@@ -112,7 +113,7 @@ Player::resetGameInfo()
     guest = x = y = app = lastAskedApp = steps = 0;
     for (int i = 0; i < MAX_CARDS; i++)
         cards[i] = 0;
-    myTurn = inGame = mustAsk = false;
+    myTurn = inGame = mustAsk = isLose = false;
 }
 
 void 
@@ -214,7 +215,7 @@ Player::sendNextMove(char guestId, char firstDie, char secondDie)
 void
 Player::makeMoveHandler()
 {
-    if (inGame && myTurn && steps && !mustAsk)
+    if (inGame && myTurn && steps && !mustAsk && !isLose)
     {
         char x = BCgetChar(recvBuf, curRecvPos);
         char y = BCgetChar(recvBuf, curRecvPos);
@@ -240,7 +241,7 @@ Player::sendGuestMakeMove(char guestId, vector<char> &v)
 void
 Player::askHandler()
 {
-    if (inGame && myTurn && app && app != lastAskedApp)
+    if (inGame && myTurn && app && app != lastAskedApp && !isLose)
     {
         char gt = BCgetChar(recvBuf, curRecvPos);
         char wp = BCgetChar(recvBuf, curRecvPos);
@@ -314,14 +315,33 @@ Player::answerHandler()
 }
 
 void
-Player::knowSecretHandler()
+Player::guessSecretHandler()
 {
     if (inGame && myTurn)
     {
         char ap = BCgetChar(recvBuf, curRecvPos);
         char gt = BCgetChar(recvBuf, curRecvPos);
         char wp = BCgetChar(recvBuf, curRecvPos);
+        Room * r = (Room *)room;
+        r->playerGuessSecret((void *)this, ap, gt, wp);
     }
+}
+
+void
+Player::sendGuessSecret(char guestId, char ap, char gt, char wp)
+{
+    short cmdSize = ap ? 6 : 3;
+    short cmdId = S_GUESS_SECRET;
+    memcpy(sendBuf, &cmdSize, SHORT_SIZE);
+    memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
+    sendBuf[4] = guestId;
+    if (ap)
+    {
+        sendBuf[5] = ap;
+        sendBuf[6] = gt;
+        sendBuf[7] = wp;
+    }
+    sendData(cmdSize + SHORT_SIZE);
 }
 
 void

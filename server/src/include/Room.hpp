@@ -89,7 +89,7 @@ public:
      * with secret cards and if they are equals player win the game.
      * Else he lose and lost ability to move and ask.
      */
-    void playerKnowSecret(void * player, char ap, char gt, char wp);
+    void playerGuessSecret(void * player, char ap, char gt, char wp);
 
 //======================================================================
 //  Fields
@@ -218,6 +218,8 @@ private:
     char suspectGt;
     char suspectWp;
     char suspectAp;
+    // Winner
+    char winner;
     
     // Waiting threads
     pthread_t waitAnswerThread;

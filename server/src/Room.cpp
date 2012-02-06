@@ -92,6 +92,7 @@ Room::startGame()
 {
     cout << "Start game: room = " << this << endl;
     isWaitingIntrigue = isQuestioning = false;
+    winner = 0;
     setPlayersStartParams();
     initDuplicateCards();
     curGuestIndex = curMove = -1;
@@ -180,6 +181,7 @@ Room::setPlayersStartParams()
         if (pl = pls[i])
         {
             pl->inGame = true;
+            pl->isLose = false;
             setStartCoordinates(pl->x, pl->y, pl->guest);
         }
 }
@@ -341,6 +343,16 @@ Room::nextMove()
 void
 Room::endGame()
 {
+    Player ** pls = (Player **)players;
+    Player * pl;
+    for (int i = 0; i < totalPlayers; i++)
+        if (pl = pls[i])
+        {
+            pl->resetGameInfo();
+            pl->room = NULL;
+            pls[i] = NULL;
+        }
+    
     curPlayersCount = 0;
     isOpen = true;
     availableGuests = 63;
@@ -465,6 +477,7 @@ Room::moveGuestToRoom(char gt, char ap)
     {
         pl->x = x;
         pl->y = y;
+        pl->app = ap;
     }
     v.push_back(y);
     v.push_back(x);
@@ -506,6 +519,30 @@ Room::getAppCoordinates(char ap, char &x, char &y)
 }
 
 void
+Room::playerGuessSecret(void * player, char ap, char gt, char wp)
+{
+    pthread_mutex_lock(&removePlayerMutex);
+    Player ** pls = (Player **)players;
+    Player * pl = (Player *)player;
+    char guestId = pl->guest;
+    if (ap == SECRET_AP && gt == SECRET_GT && wp == SECRET_WP)
+        winner = guestId;
+    else
+        pl->isLose = true;
+    for (int i = 0; i < totalPlayers; i++)
+        if (pl = pls[i])
+            if (winner)
+                pl->sendGuessSecret(guestId, ap, gt, wp);
+            else
+                pl->sendGuessSecret(guestId, 0, 0, 0);
+    if (winner)
+    {
+        endGame();
+    }
+    pthread_mutex_unlock(&removePlayerMutex);
+}
+
+void
 Room::playerAsk(void * player, char guest, char weapon)
 {
     if (!isQuestioning)
@@ -519,6 +556,7 @@ Room::playerAsk(void * player, char guest, char weapon)
         Player ** pls = (Player **)players;
         Player * pl = (Player *)player;
         pl->lastAskedApp = pl->app;
+        pl->mustAsk = false;
         char enquirer = pl->guest;
         curEnquiror = enquirer;
         suspectAp = pl->app;
