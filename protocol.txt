@@ -61,7 +61,7 @@ This command mean that client want to enter into room for five players.
     Params:
     guest_id [1]
     x_coordinate [1] ---> n times
-    y_coordinate [1] -/
+    y_coordinate [1] _/
 
 13  - S_NEXT_MOVE. Command says which guest is moving now and how much
     move points he has. If second_die is 1 player get the card
@@ -70,6 +70,32 @@ This command mean that client want to enter into room for five players.
     guest_id [1]
     first_die [1]
     second_die [1]
+
+15  - S_PLAYER_ASK. Some guest suspect room, murderer and weapon.
+    Params:
+    enquirer [1] - id of the guest who makes suspection.
+    room [1]
+    guest [1]
+    weapon [1]
+
+17  - S_PLAYER_ANSWER. Some player answer on suspect.
+    Params:
+    answered_guest [1]
+    card [1] - optionally, sends only to asked player.
+
+19  - S_WAIT_ANSWER. Command means that server starts to wait answer
+    by specified guest, specified count of seconds.
+    Params:
+    guest_id [1]
+    seconds [1]
+
+21  - S_NO_CARDS. Sends if player hasn't suspected cards.
+    Params:
+    guest [1]
+    room [1]
+    guest [1]
+    weapon [1]
+    
 
 ========================================================================
     Client side commands
@@ -106,5 +132,17 @@ This command mean that client want to enter into room for five players.
 10  - C_ASK. When player is in room he can suspect murderer and weapon.
     Player cannot ask twice about one room in same turn.
     Params:
+    guest [1]
+    weapon [1]
+
+12  - C_ANSWER. Player answer on suspect. If param 'card' is negative,
+    this means that player has no suspected cards.
+    Params:
+    card [1]
+
+14  - C_KNOW_SECRET. Player suspect secret cards. If he is right, he
+    win the game. Else he lose and server starts to rule his guest.
+    Params:
+    room [1]
     guest [1]
     weapon [1]

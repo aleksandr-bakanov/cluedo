@@ -83,6 +83,26 @@ public:
      */
     void sendGuestMakeMove(char guestId, vector<char> &v);
     
+    /**
+     * Function sends S_PLAYER_ASK command.
+     */
+    void sendPlayerAsk(char enquirer, char gt, char wp, char ap);
+    
+    /**
+     * Function sends S_PLAYER_ANSWER command.
+     */
+    void sendPlayerAnswer(char gt, char card);
+    
+    /**
+     * Function sends S_WAIT_ANSWER command.
+     */
+    void sendWaitAnswer(char gt, char seconds);
+    
+    /**
+     * Function sends S_NO_CARDS command.
+     */
+    void sendNoCards(char guestId, char ap, char gt, char wp);
+    
     // A* function
     void aStar(char x, char y, char tox, char toy, vector<char> &v);
 //======================================================================
@@ -151,6 +171,10 @@ private:
     void makeMoveHandler();
     // C_ASK command handler
     void askHandler();
+    // C_ANSWER command handler
+    void answerHandler();
+    // C_KNOW_SECRET command handler
+    void knowSecretHandler();
     
     // A* util functions
     int exist(char x, char y, vector<Cell> &v);
@@ -182,11 +206,17 @@ const short S_GUEST_CHOOSE_RESULT = 7;
 const short S_START_GAME_INFO = 9;
 const short S_GUEST_MOVE = 11;
 const short S_NEXT_MOVE = 13;
+const short S_PLAYER_ASK = 15;
+const short S_PLAYER_ANSWER = 17;
+const short S_WAIT_ANSWER = 19;
+const short S_NO_CARDS = 21;
 // Client side command ids.
 const short C_ENTER_ROOM = 2;
 const short C_LEAVE_ROOM = 4;
 const short C_CHOOSE_GUEST = 6;
 const short C_GUEST_MOVE = 8;
 const short C_ASK = 10;
+const short C_ANSWER = 12;
+const short C_KNOW_SECRET = 14;
 
 #endif /* _PLAYER_ */

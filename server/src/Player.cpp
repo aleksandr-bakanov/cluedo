@@ -54,6 +54,7 @@ Player::parse()
             case C_CHOOSE_GUEST: chooseGuestHandler(); break;
             case C_GUEST_MOVE: makeMoveHandler(); break;
             case C_ASK: askHandler(); break;
+            case C_ANSWER: answerHandler(); break;
             default: break;
         }
         curRecvPos = 0;
@@ -245,6 +246,81 @@ Player::askHandler()
         char wp = BCgetChar(recvBuf, curRecvPos);
         if (gt >= 0 && gt < 7 && wp >= 7 && wp < 16)
             ((Room *)room)->playerAsk(this, gt, wp);
+    }
+}
+
+void
+Player::sendPlayerAsk(char enquirer, char ap, char gt, char wp)
+{
+    short cmdSize = 6;
+    short cmdId = S_PLAYER_ASK;
+    memcpy(sendBuf, &cmdSize, SHORT_SIZE);
+    memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
+    sendBuf[4] = enquirer;
+    sendBuf[5] = ap;
+    sendBuf[6] = gt;
+    sendBuf[7] = wp;
+    sendData(cmdSize + SHORT_SIZE);
+}
+
+void
+Player::sendPlayerAnswer(char gt, char card)
+{
+    short cmdSize = 3 + (card ? 1 : 0);
+    short cmdId = S_PLAYER_ANSWER;
+    memcpy(sendBuf, &cmdSize, SHORT_SIZE);
+    memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
+    sendBuf[4] = gt;
+    if (card)
+        sendBuf[5] = card;
+    sendData(cmdSize + SHORT_SIZE);
+}
+
+void
+Player::sendWaitAnswer(char gt, char seconds)
+{
+    short cmdSize = 4;
+    short cmdId = S_WAIT_ANSWER;
+    memcpy(sendBuf, &cmdSize, SHORT_SIZE);
+    memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
+    sendBuf[4] = gt;
+    sendBuf[5] = seconds;
+    sendData(cmdSize + SHORT_SIZE);
+}
+
+void
+Player::sendNoCards(char guestId, char ap, char gt, char wp)
+{
+    short cmdSize = 6;
+    short cmdId = S_NO_CARDS;
+    memcpy(sendBuf, &cmdSize, SHORT_SIZE);
+    memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
+    sendBuf[4] = guestId;
+    sendBuf[5] = ap;
+    sendBuf[6] = gt;
+    sendBuf[7] = wp;
+    sendData(cmdSize + SHORT_SIZE);
+}
+
+void
+Player::answerHandler()
+{
+    if (inGame)
+    {
+        char card = BCgetChar(recvBuf, curRecvPos);
+        Room * r = (Room *)room;
+        r->playerAnswer((void *)this, card);
+    }
+}
+
+void
+Player::knowSecretHandler()
+{
+    if (inGame && myTurn)
+    {
+        char ap = BCgetChar(recvBuf, curRecvPos);
+        char gt = BCgetChar(recvBuf, curRecvPos);
+        char wp = BCgetChar(recvBuf, curRecvPos);
     }
 }
 

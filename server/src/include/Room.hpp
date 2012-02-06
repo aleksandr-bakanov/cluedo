@@ -64,6 +64,33 @@ public:
      * Player suspect murderer and weapon.
      */
     void playerAsk(void * player, char guest, char weapon);
+    
+    /**
+     * Function transport guest to the room directly without calling
+     * A* algorithm.
+     */
+    void moveGuestToRoom(char gt, char ap);
+    
+    void getAppCoordinates(char ap, char &x, char &y);
+    
+    /**
+     * Some player answer on suspect.
+     */
+    void playerAnswer(void * player, char card);
+    
+    /**
+     * Function makes auto answer based on cards of player who must
+     * answer now.
+     */
+    void autoAnswer();
+    
+    /**
+     * Player make his final suspect. Function compare ap, gt and wp
+     * with secret cards and if they are equals player win the game.
+     * Else he lose and lost ability to move and ask.
+     */
+    void playerKnowSecret(void * player, char ap, char gt, char wp);
+
 //======================================================================
 //  Fields
 //======================================================================
@@ -79,8 +106,6 @@ public:
     // True if somebody start suspect someone else. Set to false when
     // questioning is over.
     bool isQuestioning;
-    // Index of the guest who must answer now.
-    char curAnswerIndex;
     // Map
     static char ** map;
     
@@ -147,6 +172,23 @@ private:
      */
     char getAppByCoordinates(char x, char y);
     
+    /**
+     * Function returns index of the next player who sits on the left
+     * hand.
+     */
+    char getNextAnswerIndex(char current);
+    
+    /**
+     * Function returns card id if it's in the cards array, else
+     * returns 0.
+     */
+    char searchCard(char ap, char gt, char wp, const char * cards);
+    
+    /**
+     * Function sets isQuestioning to false and run nextMove function.
+     */
+    void stopQuestioning();
+    
 //======================================================================
 //  Fields
 //======================================================================
@@ -167,6 +209,19 @@ private:
     char ** dupCards;
     // Order of guest's moves
     char guestsOrder[6];
+    // Index of the guest who must answer now.
+    char curAnswerIndex;
+    char curEnquiror;
+    // Wait for somebody play intrigue card such as view the card.
+    bool isWaitingIntrigue;
+    // Current sustected cards
+    char suspectGt;
+    char suspectWp;
+    char suspectAp;
+    
+    // Waiting threads
+    pthread_t waitAnswerThread;
+    pthread_t waitNextMoveThread;
     
     // Mutexes
     pthread_mutex_t chooseGuestMutex;
@@ -176,9 +231,12 @@ private:
 // Timer (waiting) functions
 void * waitCheckGuestDistribution(void * ptr);
 void * waitNextMove(void * ptr);
+void * waitAutoAnswer(void * ptr);
 
 const char MAX_GUESTS = 6;
 const char ONE_TURN_DELAY = 5;
+const char WAIT_ANSWER_DELAY = 10;
+const char MAX_THINK_IMIT = 5;
 
 // Guest constants
 const char GT_SCARLETT = 1;
