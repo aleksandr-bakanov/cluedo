@@ -71,7 +71,7 @@ public:
     /**
      * Function sends to client start game information.
      */
-    void sendStartInfo();
+    void sendStartInfo(const char * order);
     
     /**
      * Function sends next move info, such as guest id and the dice.

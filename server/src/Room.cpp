@@ -289,13 +289,12 @@ Room::sendStartInfo()
     Player * pl;
     for (int i = 0; i < totalPlayers; i++)
         if (pl = pls[i])
-            pl->sendStartInfo();
+            pl->sendStartInfo(guestsOrder);
 }
 
 void
 Room::nextMove()
 {
-    cout << "nextMove" << endl;
     pthread_mutex_lock(&removePlayerMutex);
     curMove++;
     curGuestIndex++;

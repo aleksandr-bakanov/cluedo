@@ -129,16 +129,11 @@ Player::leaveRoomHandler()
 void
 Player::sendAvailableGuests(char guestMap)
 {
-    short cmdSize;
-    int pos = 4;
+    short cmdSize = 3;
     short cmdId = S_AVAILABLE_GUESTS;
     memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
-    for (int i = 0; i < MAX_GUESTS; i++)
-        if (guestMap & char(pow(2, i)))
-            sendBuf[pos++] = char(i + 1);
-    cmdSize = SHORT_SIZE + pos - 4;
-    memcpy(sendBuf, &cmdSize, SHORT_SIZE);
-    sendData(pos);
+    sendBuf[4] = guestMap;
+    sendData(5);
 }
 
 void 
@@ -185,15 +180,18 @@ Player::addCard(char card)
 }
 
 void
-Player::sendStartInfo()
+Player::sendStartInfo(const char * order)
 {
     short cmdId = S_START_GAME_INFO;
     memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
     sendBuf[4] = guest;
     sendBuf[5] = x;
     sendBuf[6] = y;
+    int i;
     short cmdSize = 5;
-    for (int i = 0; cards[i]; i++)
+    for (i = 0; i < 6; i++)
+        sendBuf[++cmdSize + 1] = order[i];
+    for (i = 0; cards[i]; i++)
         sendBuf[++cmdSize + 1] = cards[i];
     memcpy(sendBuf, &cmdSize, SHORT_SIZE);
     sendData(cmdSize + SHORT_SIZE);
@@ -209,7 +207,8 @@ Player::sendNextMove(char guestId, char firstDie, char secondDie)
     sendBuf[4] = guestId;
     sendBuf[5] = firstDie;
     sendBuf[6] = secondDie;
-    sendData(7);
+    sendBuf[7] = ONE_TURN_DELAY;
+    sendData(8);
 }
 
 void

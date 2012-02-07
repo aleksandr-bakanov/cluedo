@@ -22,13 +22,11 @@ This command mean that client want to enter into room for five players.
     type requested into C_ENTER_ROOM command.
 
 5   - S_AVAILABLE_GUESTS. When client enter to room server send to him
-    list of available to choose guests. For get count of ids in command
-    just look at the command length in the first two bytes. Example:
-    command length = 6, command id occupy two bytes, so there are four
-    bytes for guest ids, and this mean that there are four guest
+    list of available to choose guests. Guest id showed below specify
+    number of the bit in the guest_ids byte that set if this guest is
     available.
     Params:
-    guest_ids [n]   - each id occupy one byte. Here is ids:
+    guest_ids [1]   - each id occupy one byte. Here is ids:
         Miss Scarlett   - 1
         Colonel Mustard - 2
         Mrs. White      - 3
@@ -36,7 +34,7 @@ This command mean that client want to enter into room for five players.
         Mrs. Peacock    - 5
         Professor Plum  - 6
     For example:
-    [1][3][6] - this mean that miss Scarlett, mrs. White and professor
+    00100101 - this mean that miss Scarlett, mrs. White and professor
         Plum are available.
 
 7   - S_GUEST_CHOOSE_RESULT. This command send to client after his
@@ -53,6 +51,7 @@ This command mean that client want to enter into room for five players.
     guest_id [1]
     x_coordinate [1]
     y_coordinate [1]
+    guests_order [6]
     cards_ids [n]
 
 11  - S_GUEST_MOVE. Sends if one of the guest move on some coordinates
@@ -70,6 +69,7 @@ This command mean that client want to enter into room for five players.
     guest_id [1]
     first_die [1]
     second_die [1]
+    seconds_for_move [1]
 
 15  - S_PLAYER_ASK. Some guest suspect room, murderer and weapon.
     Params:
