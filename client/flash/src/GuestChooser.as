@@ -17,7 +17,6 @@ package
 	public class GuestChooser extends Sprite 
 	{
 		private var _model:Model;
-		private var _colors:Array = [0xFF0000, 0xFFFF00, 0xFFFFFF, 0x00FF00, 0x0000FF, 0xFF00FF];
 		private var _buttons:Array;
 		
 		public function GuestChooser(model:Model) 
@@ -74,7 +73,7 @@ package
 				g.clear();
 				g.lineStyle(1, 0, 1, true);
 				if (ag & Math.pow(2, i))
-					g.beginFill(_colors[i]);
+					g.beginFill(Model.COLORS[i]);
 				else
 					g.beginFill(0xAAAAAA);
 				g.drawCircle(25, 25, 25);

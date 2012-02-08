@@ -17,6 +17,7 @@ package
 		private var _model:Model;
 		private var _roomChooser:RoomChooser;
 		private var _guestChooser:GuestChooser;
+		private var _orderPanel:OrderPanel;
 
 		public function CluedoMain():void 
 		{
@@ -32,6 +33,7 @@ package
 			configureModelListeners();
 			_roomChooser = new RoomChooser(_model);
 			_guestChooser = new GuestChooser(_model);
+			_orderPanel = new OrderPanel(_model);
 			_connector = new Connector(_model);
 		}
 		
@@ -39,6 +41,19 @@ package
 		{
 			_model.addEventListener(CluedoEvent.CONNECT, connectHandler);
 			_model.addEventListener(CluedoEvent.AVAILABLE_GUESTS, availableGuestHandler);
+			_model.addEventListener(CluedoEvent.INIT_GAME, initGameHandler);
+		}
+		
+		private function initGameHandler(e:CluedoEvent):void 
+		{
+			if (contains(_guestChooser))
+				removeChild(_guestChooser);
+			if (!contains(_orderPanel))
+			{
+				_orderPanel.init(_model.guestsOrder);
+				_orderPanel.x = (stage.stageWidth - _orderPanel.width) / 2;
+				addChild(_orderPanel);
+			}
 		}
 		
 		private function availableGuestHandler(e:CluedoEvent):void 

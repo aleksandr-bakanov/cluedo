@@ -163,6 +163,7 @@ package
 			var fd:int = _socket.readByte();
 			var sd:int = _socket.readByte();
 			var sc:int = _socket.readByte();
+			_model.dispatchEvent(new CluedoEvent(CluedoEvent.NEXT_MOVE, gt));
 		}
 		
 		private function guestMoveHandler():void 
@@ -182,6 +183,7 @@ package
 				_model.guestsOrder.push(_socket.readByte());
 			for (i = 0; i < _lastComSize - 11; i++)
 				_model.cards.push(_socket.readByte());
+			_model.dispatchEvent(new CluedoEvent(CluedoEvent.INIT_GAME));
 		}
 		
 		private function guestChooseResultHandler():void 

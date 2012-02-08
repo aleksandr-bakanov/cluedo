@@ -12,6 +12,8 @@ package
 		public static const ENTER_ROOM:String = "enter_room";
 		public static const AVAILABLE_GUESTS:String = "available_guests";
 		public static const CHOOSE_GUEST:String = "choose_guest";
+		public static const INIT_GAME:String = "init_game";
+		public static const NEXT_MOVE:String = "next_move";
 		
 		public var data:Object;
 		
