@@ -192,19 +192,19 @@ Room::setStartCoordinates(char &x, char &y, char guest)
     if (guest == GT_SCARLETT) {
         x = 0; y = 17;
     }
-    else if (guest == GT_GREEN) {
+    else if (guest == GT_MUSTARD) {
         x = 9; y = 0;
     }
-    else if (guest == GT_MUSTARD) {
+    else if (guest == GT_WHITE) {
         x = 14; y = 0;
     }
-    else if (guest == GT_PEACOCK) {
+    else if (guest == GT_GREEN) {
         x = 23; y = 6;
     }
-    else if (guest == GT_PLUM) {
+    else if (guest == GT_PEACOCK) {
         x = 23; y = 19;
     }
-    else if (guest == GT_WHITE) {
+    else if (guest == GT_PLUM) {
         x = 7; y = 24;
     }
 }

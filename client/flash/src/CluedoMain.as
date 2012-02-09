@@ -18,6 +18,9 @@ package
 		private var _roomChooser:RoomChooser;
 		private var _guestChooser:GuestChooser;
 		private var _orderPanel:OrderPanel;
+		private var _map:Map;
+		private var _clock:Clock;
+		private var _dice:Dice;
 
 		public function CluedoMain():void 
 		{
@@ -34,6 +37,9 @@ package
 			_roomChooser = new RoomChooser(_model);
 			_guestChooser = new GuestChooser(_model);
 			_orderPanel = new OrderPanel(_model);
+			_map = new Map(_model);
+			_clock = new Clock(_model);
+			_dice = new Dice(_model);
 			_connector = new Connector(_model);
 		}
 		
@@ -53,6 +59,21 @@ package
 				_orderPanel.init(_model.guestsOrder);
 				_orderPanel.x = (stage.stageWidth - _orderPanel.width) / 2;
 				addChild(_orderPanel);
+			}
+			if (!contains(_map))
+			{
+				_map.x = (stage.stageWidth - _map.width) / 2;
+				_map.y = _orderPanel.height + 20;
+				addChild(_map);
+			}
+			if (!contains(_clock))
+			{
+				_clock.x = stage.stageWidth - _clock.width;
+				addChild(_clock);
+			}
+			if (!contains(_dice))
+			{
+				addChild(_dice);
 			}
 		}
 		

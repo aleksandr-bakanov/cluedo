@@ -163,7 +163,7 @@ package
 			var fd:int = _socket.readByte();
 			var sd:int = _socket.readByte();
 			var sc:int = _socket.readByte();
-			_model.dispatchEvent(new CluedoEvent(CluedoEvent.NEXT_MOVE, gt));
+			_model.dispatchEvent(new CluedoEvent(CluedoEvent.NEXT_MOVE, { gt:gt, fd:fd, sd:sd, sc:sc } ));
 		}
 		
 		private function guestMoveHandler():void 
