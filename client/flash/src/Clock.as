@@ -22,17 +22,24 @@ package
 		{
 			_model = model;
 			_model.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
+			_model.addEventListener(CluedoEvent.END_GAME, endGameHandler);
 			
 			_field = new TextField();
 			_field.height = 20;
 			_field.width = 20;
 			_field.border = true;
+			_field.selectable = false;
 			_field.defaultTextFormat = new TextFormat("_typewriter", 12, 0, null, null, null, null, null, TextFormatAlign.RIGHT);
 			addChild(_field);
 			
 			_seconds = 0;
 			_timer = new Timer(1000);
 			_timer.addEventListener(TimerEvent.TIMER, timerHandler);
+		}
+		
+		private function endGameHandler(e:CluedoEvent):void 
+		{
+			_timer.reset();
 		}
 		
 		private function timerHandler(e:TimerEvent):void 

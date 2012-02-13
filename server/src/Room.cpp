@@ -94,9 +94,9 @@ Room::startGame()
     isWaitingIntrigue = isQuestioning = false;
     winner = 0;
     setPlayersStartParams();
-    initDuplicateCards();
     curGuestIndex = curMove = -1;
     shuffleGuests();
+    initDuplicateCards();
     dealCards();
     sendStartInfo();
     // This mutex was locked in addPlayer function when condition
@@ -220,7 +220,8 @@ Room::dealCards()
         cards[i] = i + 1;
     SECRET_GT = (rand() % MAX_GUESTS) + 1;
     SECRET_WP = (rand() % 9) + 7;
-    SECRET_AP = (rand() % 10) + 16;
+    SECRET_AP = (rand() % 9) + 16;
+    cout << "GT = " << int(SECRET_GT) << ", WP = " << int(SECRET_WP) << ", AP = " << int(SECRET_AP) << endl;
     cards[SECRET_GT - 1] = cards[count-- - 1];
     cards[SECRET_WP - 1] = cards[count-- - 1];
     cards[SECRET_AP - 1] = cards[count-- - 1];
@@ -236,7 +237,7 @@ Room::dealCards()
                 in = rand() % count;
                 card = cards[in];
                 index = pl->addCard(card);
-                dupCards[guestsOrder[i] - 11][index] = card;
+                dupCards[i][index] = card;
                 cards[in] = cards[count-- - 1];
             }
         }
@@ -246,11 +247,12 @@ Room::dealCards()
 void *
 Room::getPlayerByGuest(char guest)
 {
+    char gt = guest > 10 ? guest - 10 : guest;
     Player ** pls = (Player **)players;
     Player * pl;
     for (char i = 0; i < totalPlayers; i++)
         if (pl = pls[i])
-            if (pl->guest == guest)
+            if (pl->guest == gt)
                 return (void *)pl;
     return (void *)NULL;
 }
@@ -268,10 +270,11 @@ Room::initDuplicateCards()
         dupCards = NULL;
     }
     dupCards = new char*[MAX_GUESTS];
-    Player * pl;
+    //Player * pl;
     for (i = 0; i < MAX_GUESTS; i++)
     {
-        if (pl = (Player *)getPlayerByGuest(i + 1))
+        //if (pl = (Player *)getPlayerByGuest(guestsOrder[i]))
+        if (guestsOrder[i] > 10)
         {
             dupCards[i] = new char[MAX_CARDS];
             for (int j = 0; j < MAX_CARDS; j++)
@@ -324,12 +327,13 @@ Room::nextMove()
             Player ** pls = (Player **)players;
             char firstDie = (rand() % 6) + 1;
             char secondDie = (rand() % 6) + 1;
-            pl->steps = firstDie + (secondDie != 1 ? secondDie : 0);
+            //pl->steps = firstDie + (secondDie != 1 ? secondDie : 0);
+            pl->steps = firstDie + secondDie;
             /// TODO: send intrigue if secondDie == 1
             for (i = 0; i < totalPlayers; i++)
                 if (pl = pls[i])
                 {
-                    pl->myTurn = pl->guest == gt;
+                    pl->myTurn = pl->guest == (gt > 10 ? gt - 10 : gt);
                     pl->sendNextMove(gt, firstDie, secondDie);
                 }
         }
@@ -342,20 +346,23 @@ Room::nextMove()
 void
 Room::endGame()
 {
-    Player ** pls = (Player **)players;
-    Player * pl;
-    for (int i = 0; i < totalPlayers; i++)
-        if (pl = pls[i])
-        {
-            pl->resetGameInfo();
-            pl->room = NULL;
-            pls[i] = NULL;
-        }
-    
-    curPlayersCount = 0;
-    isOpen = true;
-    availableGuests = 63;
-    cout << "Room::endGame\n";
+    if (!isOpen)
+    {
+        Player ** pls = (Player **)players;
+        Player * pl;
+        for (int i = 0; i < totalPlayers; i++)
+            if (pl = pls[i])
+            {
+                pl->resetGameInfo();
+                pl->room = NULL;
+                pls[i] = NULL;
+            }
+        
+        curPlayersCount = 0;
+        isOpen = true;
+        availableGuests = 63;
+        cout << "Room::endGame\n";
+    }
 }
 
 void
@@ -408,6 +415,7 @@ Room::guestMakeMove(void * player, char x, char y)
                         if (pl->x == x && pl->y == y)
                             available = false;
 
+                pl = (Player *)player;
                 if ((c == ':' && available) ||
                     (c != ':' && nextApp != pl->lastAskedApp))
                 {
@@ -419,6 +427,8 @@ Room::guestMakeMove(void * player, char x, char y)
                     {
                         pl->steps -= v.size() / 2;
                         pl->app = nextApp;
+                        pl->x = x;
+                        pl->y = y;
                         pl->mustAsk = bool(nextApp);
                         if (c == ':' && pl->steps == 0)
                             pl->lastAskedApp = 0;
@@ -468,8 +478,6 @@ Room::moveGuestToRoom(char gt, char ap)
 {
     Player ** pls = (Player **)players;
     Player * pl = (Player *)getPlayerByGuest(gt);
-    vector<char> v;
-    v.clear();
     char x, y;
     getAppCoordinates(ap, x, y);
     if (pl)
@@ -478,11 +486,9 @@ Room::moveGuestToRoom(char gt, char ap)
         pl->y = y;
         pl->app = ap;
     }
-    v.push_back(y);
-    v.push_back(x);
     for (int i = 0; i < totalPlayers; i++)
         if (pl = pls[i])
-            pl->sendGuestMakeMove(gt, v);
+            pl->sendTransGuest(gt, x, y);
 }
 
 void
@@ -520,6 +526,7 @@ Room::getAppCoordinates(char ap, char &x, char &y)
 void
 Room::playerGuessSecret(void * player, char ap, char gt, char wp)
 {
+    cout << "Room::playerGuessSecret\n";
     pthread_mutex_lock(&removePlayerMutex);
     Player ** pls = (Player **)players;
     Player * pl = (Player *)player;
@@ -544,6 +551,7 @@ Room::playerGuessSecret(void * player, char ap, char gt, char wp)
 void
 Room::playerAsk(void * player, char guest, char weapon)
 {
+    //cout << "Room::playerAsk(" << player << ", " << int(guest) << ", " << int(weapon) << ");\n";
     if (!isQuestioning)
     {
         pthread_mutex_lock(&removePlayerMutex);
@@ -571,10 +579,12 @@ Room::playerAsk(void * player, char guest, char weapon)
 
         curAnswerIndex = getNextAnswerIndex(curGuestIndex);
         pl = (Player *)getPlayerByGuest(guestsOrder[curAnswerIndex]);
+        //cout << "  Room::playerAsk (576): curAnswerIndex = " << int(curAnswerIndex) << "; pl = " << pl << endl;
         while (!pl)
         {
             if (guestsOrder[curAnswerIndex] > 10)
             {
+                //cout << "  Room::playerAsk (580): curAnswerIndex = " << int(curAnswerIndex) << "; guest = " << int(guestsOrder[curAnswerIndex] - 10) << endl;
                 cardToSend = searchCard(suspectAp, suspectGt, suspectWp,
                                         dupCards[curAnswerIndex]);
                 gt = guestsOrder[curAnswerIndex];
@@ -582,10 +592,12 @@ Room::playerAsk(void * player, char guest, char weapon)
                     if (pl = pls[i])
                         pl->sendWaitAnswer(gt, WAIT_ANSWER_DELAY);
                 sleep(MAX_THINK_IMIT);
+                //cout << "  Room:playerAsk (588): after sleep\n";
                 if (cardToSend)
                     break;
                 else
                 {
+                    //cout << "  Room:playerAsk (593): sendNoCards\n";
                     for (i = 0; i < totalPlayers; i++)
                         if (pl = pls[i])
                             pl->sendNoCards(gt, suspectAp, suspectGt,
@@ -594,6 +606,7 @@ Room::playerAsk(void * player, char guest, char weapon)
             }
             curAnswerIndex = getNextAnswerIndex(curAnswerIndex);
             pl = (Player*)getPlayerByGuest(guestsOrder[curAnswerIndex]);
+            //cout << "    Room::playerAsk (603): curAnswerIndex = " << int(curAnswerIndex) << "; pl = " << pl << endl;
         }
         if (pl && pl != player)
         {
@@ -610,6 +623,7 @@ Room::playerAsk(void * player, char guest, char weapon)
         }
         if (cardToSend)
         {
+            //cout << "  Room::playerAsk: sendPlayerAnswer(" << int(cardToSend) << ");\n";
             for (i = 0; i < totalPlayers; i++)
                 if (pl = pls[i])
                     pl->sendPlayerAnswer(guestsOrder[curAnswerIndex],
@@ -646,18 +660,27 @@ Room::searchCard(char ap, char gt, char wp, const char * cards)
 void
 Room::playerAnswer(void * player, char card)
 {
+    //cout << "  Room::playerAnswer(" << player << ", " << int(card) << ");\n";
     if (isQuestioning)
     {
         pthread_mutex_lock(&removePlayerMutex);
+        
+        
+        
         Player ** pls = (Player **)players;
         Player * pl = (Player *)player;
         char gt = guestsOrder[curAnswerIndex];
+        if (gt > 10)
+            gt -= 10;
         int i;
+        //cout << "gt = " << int(gt) << ", pl->guest = " << int(pl->guest) << endl;
         if (gt == pl->guest)
         {
             if (searchCard(card, card, card, (char *)(pl->cards)))
             {
                 pthread_cancel(waitAnswerThread);
+                //cout << "Get card from " << int(gt) << ": " << int(card) << ". And cancel waitAnswerThread.\n";
+                //cout << "  Room::playerAnswer: 1 sendPlayerAnswer(" << int(card) << ");\n";
                 for (i = 0; i < totalPlayers; i++)
                     if (pl = pls[i])
                         pl->sendPlayerAnswer(gt,
@@ -667,6 +690,7 @@ Room::playerAnswer(void * player, char card)
             else if (card < 0)
             {
                 pthread_cancel(waitAnswerThread);
+                //cout << "  Room:playerAnswer (685): sendNoCards\n";
                 for (i = 0; i < totalPlayers; i++)
                     if (pl = pls[i])
                         pl->sendNoCards(gt, suspectAp, suspectGt,
@@ -682,14 +706,15 @@ Room::playerAnswer(void * player, char card)
                         cardToSend = searchCard(suspectAp, suspectGt, suspectWp,
                                                 dupCards[curAnswerIndex]);
                         gt = guestsOrder[curAnswerIndex];
-                        for (i = 0; i < totalPlayers; i++)
+                        /*for (i = 0; i < totalPlayers; i++)
                             if (pl = pls[i])
-                                pl->sendWaitAnswer(gt, WAIT_ANSWER_DELAY);
+                                pl->sendWaitAnswer(gt, WAIT_ANSWER_DELAY);*/
                         sleep(MAX_THINK_IMIT);
                         if (cardToSend)
                             break;
                         else
                         {
+                            //cout << "  Room:playerAnswer (709): sendNoCards\n";
                             for (i = 0; i < totalPlayers; i++)
                                 if (pl = pls[i])
                                     pl->sendNoCards(gt, suspectAp, suspectGt,
@@ -714,6 +739,7 @@ Room::playerAnswer(void * player, char card)
                 }
                 if (cardToSend)
                 {
+                    //cout << "  Room::playerAnswer: 2 sendPlayerAnswer(" << int(cardToSend) << ");\n";
                     for (i = 0; i < totalPlayers; i++)
                         if (pl = pls[i])
                             pl->sendPlayerAnswer(guestsOrder[curAnswerIndex],
@@ -729,6 +755,7 @@ Room::playerAnswer(void * player, char card)
 void
 Room::autoAnswer()
 {
+    //cout << "  Room::autoAnswer();\n";
     pthread_mutex_lock(&removePlayerMutex);
     Player ** pls = (Player **)players;
     Player* pl = (Player*)getPlayerByGuest(guestsOrder[curAnswerIndex]);
@@ -739,15 +766,21 @@ Room::autoAnswer()
                             dupCards[curAnswerIndex]);
     gt = guestsOrder[curAnswerIndex];
     if (cardToSend)
+    {
+        //cout << "  Room::autoAnswer: 1 sendPlayerAnswer(" << int(cardToSend) << ");\n";
         for (i = 0; i < totalPlayers; i++)
             if (pl = pls[i])
                 pl->sendPlayerAnswer(gt,
                             pl->guest == curEnquiror ? cardToSend : 0);
+    }
     else
+    {
+        //cout << "  Room:autoAnswer (770): sendNoCards\n";
         for (i = 0; i < totalPlayers; i++)
             if (pl = pls[i])
                 pl->sendNoCards(gt, suspectAp, suspectGt,
                                 suspectWp);
+    }
         
     if (!cardToSend)
     {
@@ -760,14 +793,15 @@ Room::autoAnswer()
                 cardToSend = searchCard(suspectAp, suspectGt, suspectWp,
                                         dupCards[curAnswerIndex]);
                 gt = guestsOrder[curAnswerIndex];
-                for (i = 0; i < totalPlayers; i++)
+                /*for (i = 0; i < totalPlayers; i++)
                     if (pl = pls[i])
-                        pl->sendWaitAnswer(gt, WAIT_ANSWER_DELAY);
+                        pl->sendWaitAnswer(gt, WAIT_ANSWER_DELAY);*/
                 sleep(MAX_THINK_IMIT);
                 if (cardToSend)
                     break;
                 else
                 {
+                    //cout << "  Room:autoAnswer (796): sendNoCards\n";
                     for (i = 0; i < totalPlayers; i++)
                         if (pl = pls[i])
                             pl->sendNoCards(gt, suspectAp, suspectGt,
@@ -777,7 +811,8 @@ Room::autoAnswer()
             curAnswerIndex = getNextAnswerIndex(curAnswerIndex);
             pl = (Player*)getPlayerByGuest(guestsOrder[curAnswerIndex]);
         }
-        if (pl && pl->guest != curEnquiror)
+        char curE = curEnquiror > 10 ? curEnquiror - 10 : curEnquiror;
+        if (pl && pl->guest != curE)
         {
             gt = guestsOrder[curAnswerIndex];
             for (i = 0; i < totalPlayers; i++)
@@ -792,6 +827,7 @@ Room::autoAnswer()
         }
         if (cardToSend)
         {
+            //cout << "  Room::autoAnswer: 2 sendPlayerAnswer(" << int(cardToSend) << ");\n";
             for (i = 0; i < totalPlayers; i++)
                 if (pl = pls[i])
                     pl->sendPlayerAnswer(guestsOrder[curAnswerIndex],

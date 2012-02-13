@@ -55,6 +55,7 @@ Player::parse()
             case C_GUEST_MOVE: makeMoveHandler(); break;
             case C_ASK: askHandler(); break;
             case C_ANSWER: answerHandler(); break;
+            case C_GUESS_SECRET: guessSecretHandler(); break;
             default: break;
         }
         curRecvPos = 0;
@@ -129,8 +130,10 @@ Player::leaveRoomHandler()
 void
 Player::sendAvailableGuests(char guestMap)
 {
+    cout << "Player::sendAvailableGuests" << endl;
     short cmdSize = 3;
     short cmdId = S_AVAILABLE_GUESTS;
+    memcpy(sendBuf, &cmdSize, SHORT_SIZE);
     memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
     sendBuf[4] = guestMap;
     sendData(5);
@@ -190,7 +193,7 @@ Player::sendStartInfo(const char * order)
     int i;
     short cmdSize = 5;
     for (i = 0; i < 6; i++)
-        sendBuf[++cmdSize + 1] = order[i];
+        sendBuf[++cmdSize + 1] = order[i] > 10 ? order[i] - 10 : order[i];
     for (i = 0; cards[i]; i++)
         sendBuf[++cmdSize + 1] = cards[i];
     memcpy(sendBuf, &cmdSize, SHORT_SIZE);
@@ -204,7 +207,7 @@ Player::sendNextMove(char guestId, char firstDie, char secondDie)
     short cmdId = S_NEXT_MOVE;
     memcpy(sendBuf, &cmdSize, SHORT_SIZE);
     memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
-    sendBuf[4] = guestId;
+    sendBuf[4] = guestId > 10 ? guestId - 10 : guestId;
     sendBuf[5] = firstDie;
     sendBuf[6] = secondDie;
     sendBuf[7] = ONE_TURN_DELAY;
@@ -238,6 +241,19 @@ Player::sendGuestMakeMove(char guestId, vector<char> &v)
 }
 
 void
+Player::sendTransGuest(char guestId, char x, char y)
+{
+    short cmdSize = SHORT_SIZE + 3;
+    short cmdId = S_TRANS_GUEST;
+    memcpy(sendBuf, &cmdSize, SHORT_SIZE);
+    memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
+    sendBuf[4] = guestId;
+    sendBuf[5] = x;
+    sendBuf[6] = y;
+    sendData(cmdSize + SHORT_SIZE);
+}
+
+void
 Player::askHandler()
 {
     if (inGame && myTurn && app && app != lastAskedApp && !isLose)
@@ -256,9 +272,9 @@ Player::sendPlayerAsk(char enquirer, char ap, char gt, char wp)
     short cmdId = S_PLAYER_ASK;
     memcpy(sendBuf, &cmdSize, SHORT_SIZE);
     memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
-    sendBuf[4] = enquirer;
+    sendBuf[4] = enquirer > 10 ? enquirer - 10 : enquirer;
     sendBuf[5] = ap;
-    sendBuf[6] = gt;
+    sendBuf[6] = gt > 10 ? gt - 10 : gt;
     sendBuf[7] = wp;
     sendData(cmdSize + SHORT_SIZE);
 }
@@ -270,7 +286,7 @@ Player::sendPlayerAnswer(char gt, char card)
     short cmdId = S_PLAYER_ANSWER;
     memcpy(sendBuf, &cmdSize, SHORT_SIZE);
     memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
-    sendBuf[4] = gt;
+    sendBuf[4] = gt > 10 ? gt - 10 : gt;
     if (card)
         sendBuf[5] = card;
     sendData(cmdSize + SHORT_SIZE);
@@ -283,7 +299,7 @@ Player::sendWaitAnswer(char gt, char seconds)
     short cmdId = S_WAIT_ANSWER;
     memcpy(sendBuf, &cmdSize, SHORT_SIZE);
     memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
-    sendBuf[4] = gt;
+    sendBuf[4] = gt > 10 ? gt - 10 : gt;
     sendBuf[5] = seconds;
     sendData(cmdSize + SHORT_SIZE);
 }
@@ -295,7 +311,7 @@ Player::sendNoCards(char guestId, char ap, char gt, char wp)
     short cmdId = S_NO_CARDS;
     memcpy(sendBuf, &cmdSize, SHORT_SIZE);
     memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
-    sendBuf[4] = guestId;
+    sendBuf[4] = guestId > 10 ? guestId - 10 : guestId;
     sendBuf[5] = ap;
     sendBuf[6] = gt;
     sendBuf[7] = wp;
@@ -316,12 +332,14 @@ Player::answerHandler()
 void
 Player::guessSecretHandler()
 {
-    if (inGame && myTurn)
+    cout << "Player::guessSecretHandler\n";
+    if (inGame && myTurn && !isLose)
     {
         char ap = BCgetChar(recvBuf, curRecvPos);
         char gt = BCgetChar(recvBuf, curRecvPos);
         char wp = BCgetChar(recvBuf, curRecvPos);
         Room * r = (Room *)room;
+        cout << "  ap = " << int(ap) << "  gt = " << int(gt) << "  wp = " << int(wp) << endl;
         r->playerGuessSecret((void *)this, ap, gt, wp);
     }
 }
@@ -333,7 +351,7 @@ Player::sendGuessSecret(char guestId, char ap, char gt, char wp)
     short cmdId = S_GUESS_SECRET;
     memcpy(sendBuf, &cmdSize, SHORT_SIZE);
     memcpy(sendBuf + 2, &cmdId, SHORT_SIZE);
-    sendBuf[4] = guestId;
+    sendBuf[4] = guestId > 10 ? guestId - 10 : guestId;
     if (ap)
     {
         sendBuf[5] = ap;

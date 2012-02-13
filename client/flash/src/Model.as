@@ -15,8 +15,11 @@ package
 		public var guest:int;
 		public var x:int;
 		public var y:int;
+		public var steps:int;
 		
-		public var curGuest:int;
+		public var suspectGt:int;
+		public var suspectWp:int;
+		public var suspectAp:int;
 		
 		public function Model() 
 		{

@@ -41,7 +41,8 @@ package
 			for (var i:int = 0; i < 6; i++)
 			{
 				var index:int = order[i] > 10 ? order[i] - 10 : order[i];
-				g.beginFill(Model.COLORS[index - 1], order[i] > 10 ? 1 : .3);
+				g.lineStyle(1);
+				g.beginFill(Model.COLORS[index - 1]);
 				g.drawRect(20 + 60 * i, 10, 20, 20);
 				g.endFill();
 			}

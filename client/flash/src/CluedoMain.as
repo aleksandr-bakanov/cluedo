@@ -2,6 +2,7 @@ package
 {
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 
@@ -21,6 +22,9 @@ package
 		private var _map:Map;
 		private var _clock:Clock;
 		private var _dice:Dice;
+		private var _cardsPanel:CardsPanel;
+		private var _enquirePanel:EnquirePanel;
+		private var _guessSecretPanel:GuessSecretPanel;
 
 		public function CluedoMain():void 
 		{
@@ -40,6 +44,9 @@ package
 			_map = new Map(_model);
 			_clock = new Clock(_model);
 			_dice = new Dice(_model);
+			_cardsPanel = new CardsPanel(_model);
+			_enquirePanel = new EnquirePanel(_model);
+			_guessSecretPanel = new GuessSecretPanel(_model);
 			_connector = new Connector(_model);
 		}
 		
@@ -48,6 +55,43 @@ package
 			_model.addEventListener(CluedoEvent.CONNECT, connectHandler);
 			_model.addEventListener(CluedoEvent.AVAILABLE_GUESTS, availableGuestHandler);
 			_model.addEventListener(CluedoEvent.INIT_GAME, initGameHandler);
+			_model.addEventListener(CluedoEvent.SHOW_ENQUIRE_PANEL, showEnquirePanel);
+			_model.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
+			_model.addEventListener(CluedoEvent.END_GAME, endGameHandler);
+		}
+		
+		private function endGameHandler(e:CluedoEvent):void 
+		{
+			CluedoMain.ttrace("CluedoMain::endGameHandler");
+			if (contains(_orderPanel))
+				removeChild(_orderPanel);
+			if (contains(_map))
+				removeChild(_map);
+			if (contains(_clock))
+				removeChild(_clock);
+			if (contains(_dice))
+				removeChild(_dice);
+			if (contains(_cardsPanel))
+				removeChild(_cardsPanel);
+			if (!contains(_roomChooser))
+				addChild(_roomChooser);
+		}
+		
+		private function nextMoveHandler(e:CluedoEvent):void 
+		{
+			if (contains(_enquirePanel))
+				removeChild(_enquirePanel);
+		}
+		
+		private function showEnquirePanel(e:CluedoEvent):void 
+		{
+			if (!contains(_enquirePanel))
+			{
+				_enquirePanel.setApp(e.data as int);
+				_enquirePanel.x = (stage.stageWidth - _enquirePanel.width) * .5;
+				_enquirePanel.y = 50;
+				addChild(_enquirePanel);
+			}
 		}
 		
 		private function initGameHandler(e:CluedoEvent):void 
@@ -74,6 +118,25 @@ package
 			if (!contains(_dice))
 			{
 				addChild(_dice);
+				if (!_dice.hasEventListener(MouseEvent.CLICK))
+					_dice.addEventListener(MouseEvent.CLICK, showGuessSecretPanel);
+			}
+			if (!contains(_cardsPanel))
+			{
+				_cardsPanel.initCards(_model.cards);
+				_cardsPanel.y = 20;
+				addChild(_cardsPanel);
+			}
+		}
+		
+		private function showGuessSecretPanel(e:MouseEvent):void 
+		{
+			if (!contains(_guessSecretPanel))
+			{
+				_guessSecretPanel.clear();
+				_guessSecretPanel.x = (stage.stageWidth - _guessSecretPanel.width) * .5;
+				_guessSecretPanel.y = 50;
+				addChild(_guessSecretPanel);
 			}
 		}
 		
@@ -110,6 +173,7 @@ package
 		public static function ttrace(obj:Object):void
 		{
 			_output.appendText(String(obj) + '\n');
+			_output.scrollV = _output.maxScrollV;
 		}
 
 	}

@@ -18,18 +18,25 @@ package
 		{
 			_model = model;
 			_model.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
+			_model.addEventListener(CluedoEvent.S_GUEST_MOVE, sGuestMoveHandler);
 			
 			_field = new TextField();
 			_field.height = 20;
 			_field.width = 20;
 			_field.border = true;
+			_field.selectable = false;
 			_field.defaultTextFormat = new TextFormat("_typewriter", 12, 0, null, null, null, null, null, TextFormatAlign.RIGHT);
 			addChild(_field);
 		}
 		
+		private function sGuestMoveHandler(e:CluedoEvent):void 
+		{
+			_field.text = _model.steps.toString();
+		}
+		
 		private function nextMoveHandler(e:CluedoEvent):void 
 		{
-			_field.text = String(e.data.fd + e.data.sd);
+			_field.text = _model.steps.toString();
 		}
 		
 	}

@@ -51,7 +51,9 @@ package
 			{
 				var type:int = parseInt((e.target as TextField).text);
 				if (type)
+				{
 					_model.dispatchEvent(new CluedoEvent(CluedoEvent.ENTER_ROOM, type));
+				}
 			}
 		}
 		

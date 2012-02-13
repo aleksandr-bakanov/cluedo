@@ -73,19 +73,84 @@ package
 			_guests = [];
 			for (var k:int = 1; k < 7; k++)
 			{
-				var g:Guest = new Guest(k);
+				var g:Guest = new Guest(_model, k);
+				g.addEventListener(CluedoEvent.CHECK_STEPS, checkStepsHandler);
 				_guests.push(g);
 				_guestsCon.addChild(g);
 			}
 			initGuestsPositions();
+			configureModelListeners();
+		}
+		
+		private function checkStepsHandler(e:CluedoEvent):void 
+		{
+			if (MAP[_model.y][_model.x] != ":")
+				_model.dispatchEvent(new CluedoEvent(CluedoEvent.SHOW_ENQUIRE_PANEL, getAppByCoordinates(_model.x, _model.y)));
+			else if ((_guests.indexOf(e.target) + 1) == _model.guest && _model.steps && MAP[_model.y][_model.x] == ":")
+				glowCells(_model.x, _model.y, _model.steps);
+		}
+		
+		private function getAppByCoordinates(x:int, y:int):int
+		{
+			var r:int = 0;
+			if (x == 4 && y == 6)
+				r = Card.AP_KITCHEN;
+			else if ((x == 8 && y == 5) || (x == 15 && y == 5) ||
+					 (x == 9 && y == 7) || (x == 14 && y == 7))
+				r = Card.AP_BALLROOM;
+			else if (x == 19 && y == 5)
+				r = Card.AP_CONSERVATORY;
+			else if ((x == 7 && y == 12) || (x == 6 && y == 15))
+				r = Card.AP_DINING_ROOM;
+			else if ((x == 18 && y == 9) || (x == 22 && y == 12))
+				r = Card.AP_BILLIARD_ROOM;
+			else if ((x == 20 && y == 14) || (x == 17 && y == 16))
+				r = Card.AP_LIBRARY;
+			else if (x == 6 && y == 19)
+				r = Card.AP_LOUNGE;
+			else if (((x == 11 || x == 12) && y == 18) || (x == 14 && y == 20))
+				r = Card.AP_HALL;
+			else if (x == 17 && y == 21)
+				r = Card.AP_STUDY;
+			return r;
+		}
+		
+		private function configureModelListeners():void
+		{
 			_model.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
+			_model.addEventListener(CluedoEvent.S_GUEST_MOVE, sGuestMoveHandler);
+			_model.addEventListener(CluedoEvent.TRANS_GUEST, transGuestHandler);
+		}
+		
+		private function transGuestHandler(e:CluedoEvent):void 
+		{
+			var guest:Guest = _guests[e.data.gt - 1] as Guest;
+			if (e.data.gt == _model.guest)
+			{
+				_model.x = e.data.x;
+				_model.y = e.data.y;
+			}
+			if (guest)
+				guest.teleport(e.data.x, e.data.y);
+		}
+		
+		private function sGuestMoveHandler(e:CluedoEvent):void 
+		{
+			var guest:Guest = _guests[e.data.guest - 1] as Guest;
+			if (e.data.guest == _model.guest)
+			{
+				_model.x = e.data.path[e.data.path.length - 2];
+				_model.y = e.data.path[e.data.path.length - 1];
+			}
+			if (guest)
+				guest.go(e.data.path);
 		}
 		
 		private function nextMoveHandler(e:CluedoEvent):void 
 		{
 			var id:int = (e.data.gt > 10 ? e.data.gt - 10 : e.data.gt);
 			if (id == _model.guest)
-				glowCells(_model.x, _model.y, e.data.fd + e.data.sd);
+				glowCells(_model.x, _model.y, _model.steps);
 			else
 				unglowCells();
 		}
@@ -204,7 +269,9 @@ package
 		
 		private function cellClickHandler(e:MouseEvent):void
 		{
-			
+			var c:Cell = e.target as Cell;
+			unglowCells();
+			_model.dispatchEvent(new CluedoEvent(CluedoEvent.C_GUEST_MOVE, { x:c.xc, y:c.yc } ));
 		}
 		
 	}

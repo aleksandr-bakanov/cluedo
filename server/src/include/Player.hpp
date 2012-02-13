@@ -108,6 +108,11 @@ public:
      */
     void sendGuessSecret(char guestId, char ap, char gt, char wp);
     
+    /**
+     * Function sends S_TRANS_GUEST command.
+     */
+    void sendTransGuest(char guestId, char x, char y);
+    
     // A* function
     void aStar(char x, char y, char tox, char toy, vector<char> &v);
 //======================================================================
@@ -217,6 +222,7 @@ const short S_PLAYER_ANSWER = 17;
 const short S_WAIT_ANSWER = 19;
 const short S_NO_CARDS = 21;
 const short S_GUESS_SECRET = 23;
+const short S_TRANS_GUEST = 25;
 // Client side command ids.
 const short C_ENTER_ROOM = 2;
 const short C_LEAVE_ROOM = 4;

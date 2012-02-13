@@ -27,6 +27,7 @@ package
 		public static const S_WAIT_ANSWER:int = 19;
 		public static const S_NO_CARDS:int = 21;
 		public static const S_GUESS_SECRET:int = 23;
+		public static const S_TRANS_GUEST:int = 25;
 		// Client side command ids.
 		public static const C_ENTER_ROOM:int = 2;
 		public static const C_LEAVE_ROOM:int = 4;
@@ -52,6 +53,47 @@ package
 		{
 			_model.addEventListener(CluedoEvent.ENTER_ROOM, sendEnterRoom);
 			_model.addEventListener(CluedoEvent.CHOOSE_GUEST, sendChooseGuest);
+			_model.addEventListener(CluedoEvent.C_GUEST_MOVE, sendGuestMove);
+			_model.addEventListener(CluedoEvent.C_ASK, sendAsk);
+			_model.addEventListener(CluedoEvent.C_ANSWER, sendAnswer);
+			_model.addEventListener(CluedoEvent.C_GUESS_SECRET, sendGuessSecret);
+		}
+		
+		private function sendGuessSecret(e:CluedoEvent):void 
+		{
+			CluedoMain.ttrace("Connector::sendGuessSecret");
+			_socket.writeShort(5);
+			_socket.writeShort(C_GUESS_SECRET);
+			_socket.writeByte(e.data.ap);
+			_socket.writeByte(e.data.gt);
+			_socket.writeByte(e.data.wp);
+			_socket.flush();
+		}
+		
+		private function sendAnswer(e:CluedoEvent):void 
+		{
+			_socket.writeShort(3);
+			_socket.writeShort(C_ANSWER);
+			_socket.writeByte(e.data as int);
+			_socket.flush();
+		}
+		
+		private function sendAsk(e:CluedoEvent):void 
+		{
+			_socket.writeShort(4);
+			_socket.writeShort(C_ASK);
+			_socket.writeByte(e.data.gt);
+			_socket.writeByte(e.data.wp);
+			_socket.flush();
+		}
+		
+		private function sendGuestMove(e:CluedoEvent):void 
+		{
+			_socket.writeShort(4);
+			_socket.writeShort(C_GUEST_MOVE);
+			_socket.writeByte(e.data.x);
+			_socket.writeByte(e.data.y);
+			_socket.flush();
 		}
 		
 		private function sendChooseGuest(e:CluedoEvent):void 
@@ -108,6 +150,8 @@ package
 					parse();
 					_lastComSize = 0;
 				}
+				else
+					break;
 			}
 		}
 		
@@ -128,33 +172,79 @@ package
 				case S_WAIT_ANSWER: waitAnswerHandler(); break;
 				case S_NO_CARDS: noCardsHandler(); break;
 				case S_GUESS_SECRET: guessSecretHandler(); break;
+				case S_TRANS_GUEST: transGuestHandler(); break;
 			}
 			_lastComSize = 0;
 		}
 		
+		private function transGuestHandler():void 
+		{
+			var gt:int = _socket.readByte();
+			var x:int = _socket.readByte();
+			var y:int = _socket.readByte();
+			_model.dispatchEvent(new CluedoEvent(CluedoEvent.TRANS_GUEST, { gt:gt, x:x, y:y } ));
+		}
+		
 		private function guessSecretHandler():void 
 		{
-			
+			var enq:int = _socket.readByte();
+			var ap:int = 0;
+			var gt:int = 0;
+			var wp:int = 0;
+			if (_lastComSize - 3 > 0)
+			{
+				ap = _socket.readByte();
+				gt = _socket.readByte();
+				wp = _socket.readByte();
+			}
+			if (ap != 0)
+			{
+				CluedoMain.ttrace(Card.cardToString(enq) + " угадал: " + Card.cardToString(ap) + ", " + Card.cardToString(gt) + ", " + Card.cardToString(wp));
+				_model.dispatchEvent(new CluedoEvent(CluedoEvent.END_GAME));
+			}
+			else
+				CluedoMain.ttrace(Card.cardToString(enq) + " ошибся.");
 		}
 		
 		private function noCardsHandler():void 
 		{
-			
+			var ans:int = _socket.readByte();
+			var ap:int = _socket.readByte();
+			var gt:int = _socket.readByte();
+			var wp:int = _socket.readByte();
+			CluedoMain.ttrace(Card.cardToString(ans) + " не имеет: " + Card.cardToString(gt) +
+				", " + Card.cardToString(wp) + ", " + Card.cardToString(ap));
 		}
 		
 		private function waitAnswerHandler():void 
 		{
-			
+			var gt:int = _socket.readByte();
+			var sc:int = _socket.readByte();
+			CluedoMain.ttrace("Ждем ответа от " + Card.cardToString(gt) + "...");
+			_model.dispatchEvent(new CluedoEvent(CluedoEvent.START_WAIT_ANSWER, { gt:gt, sc:sc } ));
 		}
 		
 		private function playerAnswerHandler():void 
 		{
-			
+			var ans:int = _socket.readByte();
+			var card:int = 0;
+			if (_lastComSize - 3 > 0)
+				card = _socket.readByte();
+			if (ans != _model.guest)
+				CluedoMain.ttrace(Card.cardToString(ans) + " отвечает: " + (card ? Card.cardToString(card) : "???"));
 		}
 		
 		private function playerAskHandler():void 
 		{
-			
+			var enq:int = _socket.readByte();
+			var ap:int = _socket.readByte();
+			var gt:int = _socket.readByte();
+			var wp:int = _socket.readByte();
+			_model.suspectAp = ap;
+			_model.suspectGt = gt;
+			_model.suspectWp = wp;
+			CluedoMain.ttrace(Card.cardToString(enq) + " подозревает: убийца - " + Card.cardToString(gt) +
+				", оружие - " + Card.cardToString(wp) + ", место - " + Card.cardToString(ap));
 		}
 		
 		private function nextMoveHandler():void 
@@ -163,12 +253,21 @@ package
 			var fd:int = _socket.readByte();
 			var sd:int = _socket.readByte();
 			var sc:int = _socket.readByte();
+			if (gt == _model.guest)
+				_model.steps = fd + sd;
 			_model.dispatchEvent(new CluedoEvent(CluedoEvent.NEXT_MOVE, { gt:gt, fd:fd, sd:sd, sc:sc } ));
 		}
 		
 		private function guestMoveHandler():void 
 		{
-			
+			var gt:int = _socket.readByte();
+			var len:int = _lastComSize - 3;
+			var path:Array = [];
+			while (len--)
+				path.push(_socket.readByte());
+			if (gt == _model.guest)
+				_model.steps -= path.length / 2;
+			_model.dispatchEvent(new CluedoEvent(CluedoEvent.S_GUEST_MOVE, { guest:gt, path:path } ));
 		}
 		
 		private function startGameInfoHandler():void 
@@ -194,20 +293,17 @@ package
 			for (g = 1; g < 7; g++)
 				if (r & Math.pow(2, g - 1))
 					break;
-			CluedoMain.ttrace("Guest " + g.toString() + (!c ? " isn't" : "") + " choosen.");
 		}
 		
 		private function availableGuestsHandler():void 
 		{
 			var ag:int = _socket.readByte();
-			var s:String = "Available guests: " + ag.toString();
-			CluedoMain.ttrace(s);
 			_model.dispatchEvent(new CluedoEvent(CluedoEvent.AVAILABLE_GUESTS, ag));
 		}
 		
 		private function noRoomHandler():void 
 		{
-			
+			CluedoMain.ttrace("Свободных комнат нет, попробуйте позже.");
 		}
 		
 		private function readyHandler():void 
@@ -217,12 +313,12 @@ package
 		
 		private function securityErrorHandler(e:SecurityErrorEvent):void 
 		{
-			CluedoMain.ttrace("Security error");
+			CluedoMain.ttrace(e.toString());
 		}
 		
 		private function ioErrorHandler(e:IOErrorEvent):void 
 		{
-			CluedoMain.ttrace("IOError");
+			CluedoMain.ttrace(e.toString());
 		}
 		
 		private function closeHandler(e:Event):void 
