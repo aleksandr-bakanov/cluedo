@@ -44,6 +44,7 @@ package
 			_map = new Map(_model);
 			_clock = new Clock(_model);
 			_dice = new Dice(_model);
+            _dice.addEventListener(MouseEvent.CLICK, showGuessSecretPanel);
 			_cardsPanel = new CardsPanel(_model);
 			_enquirePanel = new EnquirePanel(_model);
 			_guessSecretPanel = new GuessSecretPanel(_model);
@@ -59,42 +60,28 @@ package
 			_model.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
 			_model.addEventListener(CluedoEvent.END_GAME, endGameHandler);
 		}
-		
-		private function endGameHandler(e:CluedoEvent):void 
+        
+        private function connectHandler(e:CluedoEvent):void 
 		{
-			CluedoMain.ttrace("CluedoMain::endGameHandler");
-			if (contains(_orderPanel))
-				removeChild(_orderPanel);
-			if (contains(_map))
-				removeChild(_map);
-			if (contains(_clock))
-				removeChild(_clock);
-			if (contains(_dice))
-				removeChild(_dice);
-			if (contains(_cardsPanel))
-				removeChild(_cardsPanel);
-			if (!contains(_roomChooser))
-				addChild(_roomChooser);
+			_roomChooser.x = (stage.stageWidth - _roomChooser.width) / 2;
+			_roomChooser.y = 150;
+            if (!contains(_roomChooser))
+                addChild(_roomChooser);
 		}
-		
-		private function nextMoveHandler(e:CluedoEvent):void 
+        
+        private function availableGuestHandler(e:CluedoEvent):void 
 		{
-			if (contains(_enquirePanel))
-				removeChild(_enquirePanel);
-		}
-		
-		private function showEnquirePanel(e:CluedoEvent):void 
-		{
-			if (!contains(_enquirePanel))
+			if (contains(_roomChooser))
+				removeChild(_roomChooser);
+			if (!contains(_guestChooser))
 			{
-				_enquirePanel.setApp(e.data as int);
-				_enquirePanel.x = (stage.stageWidth - _enquirePanel.width) * .5;
-				_enquirePanel.y = 50;
-				addChild(_enquirePanel);
+				_guestChooser.x = (stage.stageWidth - _guestChooser.width) / 2;
+				_guestChooser.y = 150;
+				addChild(_guestChooser);
 			}
 		}
-		
-		private function initGameHandler(e:CluedoEvent):void 
+        
+        private function initGameHandler(e:CluedoEvent):void 
 		{
 			if (contains(_guestChooser))
 				removeChild(_guestChooser);
@@ -118,8 +105,6 @@ package
 			if (!contains(_dice))
 			{
 				addChild(_dice);
-				if (!_dice.hasEventListener(MouseEvent.CLICK))
-					_dice.addEventListener(MouseEvent.CLICK, showGuessSecretPanel);
 			}
 			if (!contains(_cardsPanel))
 			{
@@ -128,7 +113,46 @@ package
 				addChild(_cardsPanel);
 			}
 		}
+        
+        private function showEnquirePanel(e:CluedoEvent):void 
+		{
+			if (!contains(_enquirePanel))
+			{
+				_enquirePanel.setApp(e.data as int);
+				_enquirePanel.x = (stage.stageWidth - _enquirePanel.width) * .5;
+				_enquirePanel.y = 50;
+				addChild(_enquirePanel);
+			}
+		}
+        
+        private function nextMoveHandler(e:CluedoEvent):void 
+		{
+            if (_model.curGuest != _model.guest)
+            {
+                if (contains(_enquirePanel))
+                    removeChild(_enquirePanel);
+                if (contains(_guessSecretPanel))
+                    removeChild(_guessSecretPanel);
+            }
+		}
 		
+		private function endGameHandler(e:CluedoEvent):void 
+		{
+			CluedoMain.ttrace("CluedoMain::endGameHandler");
+			if (contains(_orderPanel))
+				removeChild(_orderPanel);
+			if (contains(_map))
+				removeChild(_map);
+			if (contains(_clock))
+				removeChild(_clock);
+			if (contains(_dice))
+				removeChild(_dice);
+			if (contains(_cardsPanel))
+				removeChild(_cardsPanel);
+			if (!contains(_roomChooser))
+				addChild(_roomChooser);
+		}
+        
 		private function showGuessSecretPanel(e:MouseEvent):void 
 		{
 			if (!contains(_guessSecretPanel))
@@ -138,25 +162,6 @@ package
 				_guessSecretPanel.y = 50;
 				addChild(_guessSecretPanel);
 			}
-		}
-		
-		private function availableGuestHandler(e:CluedoEvent):void 
-		{
-			if (contains(_roomChooser))
-				removeChild(_roomChooser);
-			if (!contains(_guestChooser))
-			{
-				_guestChooser.x = (stage.stageWidth - _guestChooser.width) / 2;
-				_guestChooser.y = 150;
-				addChild(_guestChooser);
-			}
-		}
-		
-		private function connectHandler(e:CluedoEvent):void 
-		{
-			_roomChooser.x = (stage.stageWidth - _roomChooser.width) / 2;
-			_roomChooser.y = 150;
-			addChild(_roomChooser);
 		}
 		
 		private function configureOutput():void 

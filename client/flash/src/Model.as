@@ -20,6 +20,8 @@ package
 		public var suspectGt:int;
 		public var suspectWp:int;
 		public var suspectAp:int;
+        
+        public var curGuest:int;
 		
 		public function Model() 
 		{

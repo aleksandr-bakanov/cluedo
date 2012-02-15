@@ -58,6 +58,63 @@ package
 			_model.addEventListener(CluedoEvent.C_ANSWER, sendAnswer);
 			_model.addEventListener(CluedoEvent.C_GUESS_SECRET, sendGuessSecret);
 		}
+        
+        private function configureSocket():void
+		{
+			_socket = new Socket();
+			_socket.endian = Endian.LITTLE_ENDIAN;
+			_socket.addEventListener(Event.CONNECT, connectHandler);
+			_socket.addEventListener(Event.CLOSE, closeHandler);
+			_socket.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+			_socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+			_socket.addEventListener(ProgressEvent.SOCKET_DATA, socketDataHandler);
+			_socket.connect("192.168.1.3", 7003);
+		}
+        
+        private function socketDataHandler(e:ProgressEvent):void 
+		{
+			while (_socket.bytesAvailable)
+			{
+				if (!_lastComSize)
+				{
+					_lastComSize = _socket.readShort();
+					if (_socket.bytesAvailable >= _lastComSize)
+					{
+						parse();
+						_lastComSize = 0;
+					}
+				}
+				else if (_socket.bytesAvailable >= _lastComSize)
+				{
+					parse();
+					_lastComSize = 0;
+				}
+				else
+					break;
+			}
+		}
+        
+        private function parse():void
+		{
+			var comId:int = _socket.readShort();
+			switch(comId)
+			{
+				case S_READY: readyHandler(); break;
+				case S_NO_ROOM: noRoomHandler(); break;
+				case S_AVAILABLE_GUESTS: availableGuestsHandler(); break;
+				case S_GUEST_CHOOSE_RESULT: guestChooseResultHandler(); break;
+				case S_START_GAME_INFO: startGameInfoHandler(); break;
+				case S_GUEST_MOVE: guestMoveHandler(); break;
+				case S_NEXT_MOVE: nextMoveHandler(); break;
+				case S_PLAYER_ASK: playerAskHandler(); break;
+				case S_PLAYER_ANSWER: playerAnswerHandler(); break;
+				case S_WAIT_ANSWER: waitAnswerHandler(); break;
+				case S_NO_CARDS: noCardsHandler(); break;
+				case S_GUESS_SECRET: guessSecretHandler(); break;
+				case S_TRANS_GUEST: transGuestHandler(); break;
+			}
+			_lastComSize = 0;
+		}
 		
 		private function sendGuessSecret(e:CluedoEvent):void 
 		{
@@ -120,63 +177,6 @@ package
 			}
 		}
 		
-		private function configureSocket():void
-		{
-			_socket = new Socket();
-			_socket.endian = Endian.LITTLE_ENDIAN;
-			_socket.addEventListener(Event.CONNECT, connectHandler);
-			_socket.addEventListener(Event.CLOSE, closeHandler);
-			_socket.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-			_socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
-			_socket.addEventListener(ProgressEvent.SOCKET_DATA, socketDataHandler);
-			_socket.connect("192.168.1.3", 7003);
-		}
-		
-		private function socketDataHandler(e:ProgressEvent):void 
-		{
-			while (_socket.bytesAvailable)
-			{
-				if (!_lastComSize)
-				{
-					_lastComSize = _socket.readShort();
-					if (_socket.bytesAvailable >= _lastComSize)
-					{
-						parse();
-						_lastComSize = 0;
-					}
-				}
-				else if (_socket.bytesAvailable >= _lastComSize)
-				{
-					parse();
-					_lastComSize = 0;
-				}
-				else
-					break;
-			}
-		}
-		
-		private function parse():void
-		{
-			var comId:int = _socket.readShort();
-			switch(comId)
-			{
-				case S_READY: readyHandler(); break;
-				case S_NO_ROOM: noRoomHandler(); break;
-				case S_AVAILABLE_GUESTS: availableGuestsHandler(); break;
-				case S_GUEST_CHOOSE_RESULT: guestChooseResultHandler(); break;
-				case S_START_GAME_INFO: startGameInfoHandler(); break;
-				case S_GUEST_MOVE: guestMoveHandler(); break;
-				case S_NEXT_MOVE: nextMoveHandler(); break;
-				case S_PLAYER_ASK: playerAskHandler(); break;
-				case S_PLAYER_ANSWER: playerAnswerHandler(); break;
-				case S_WAIT_ANSWER: waitAnswerHandler(); break;
-				case S_NO_CARDS: noCardsHandler(); break;
-				case S_GUESS_SECRET: guessSecretHandler(); break;
-				case S_TRANS_GUEST: transGuestHandler(); break;
-			}
-			_lastComSize = 0;
-		}
-		
 		private function transGuestHandler():void 
 		{
 			var gt:int = _socket.readByte();
@@ -231,7 +231,10 @@ package
 			if (_lastComSize - 3 > 0)
 				card = _socket.readByte();
 			if (ans != _model.guest)
+            {
 				CluedoMain.ttrace(Card.cardToString(ans) + " отвечает: " + (card ? Card.cardToString(card) : "???"));
+                _model.dispatchEvent(new CluedoEvent(CluedoEvent.PLAYER_ANSWER));
+            }
 		}
 		
 		private function playerAskHandler():void 
@@ -253,6 +256,7 @@ package
 			var fd:int = _socket.readByte();
 			var sd:int = _socket.readByte();
 			var sc:int = _socket.readByte();
+            _model.curGuest = gt;
 			if (gt == _model.guest)
 				_model.steps = fd + sd;
 			_model.dispatchEvent(new CluedoEvent(CluedoEvent.NEXT_MOVE, { gt:gt, fd:fd, sd:sd, sc:sc } ));
@@ -293,6 +297,8 @@ package
 			for (g = 1; g < 7; g++)
 				if (r & Math.pow(2, g - 1))
 					break;
+            if (c)
+                _model.guest = g;
 		}
 		
 		private function availableGuestsHandler():void 

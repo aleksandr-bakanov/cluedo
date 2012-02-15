@@ -24,6 +24,7 @@ package
 		public static const C_ANSWER:String = "c_answer";
 		public static const C_GUESS_SECRET:String = "c_guess_secret";
 		public static const END_GAME:String = "end_game";
+		public static const PLAYER_ANSWER:String = "player_answer";
 		
 		public var data:Object;
 		

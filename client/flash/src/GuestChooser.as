@@ -53,12 +53,9 @@ package
 		
 		private function buttonClickHandler(e:MouseEvent):void
 		{
-			if (e.target is Sprite)
-			{
-				var gt:int = parseInt((e.target as DisplayObject).name);
-				if (gt)
-					_model.dispatchEvent(new CluedoEvent(CluedoEvent.CHOOSE_GUEST, gt));
-			}
+            var gt:int = parseInt((e.currentTarget as DisplayObject).name);
+            if (gt)
+                _model.dispatchEvent(new CluedoEvent(CluedoEvent.CHOOSE_GUEST, gt));
 		}
 		
 		private function availableGuestsHandler(e:CluedoEvent):void 

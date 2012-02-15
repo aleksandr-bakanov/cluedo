@@ -13,7 +13,7 @@ package
 	public class CardsPanel extends Sprite 
 	{
 		private var _model:Model;
-		private var _cards:Array;
+		private var _cards:Array /* of Card */;
 		
 		public function CardsPanel(model:Model) 
 		{
@@ -24,7 +24,13 @@ package
 		private function configureMovelListeners():void 
 		{
 			_model.addEventListener(CluedoEvent.START_WAIT_ANSWER, startWaitAnswerHandler);
+			_model.addEventListener(CluedoEvent.PLAYER_ANSWER, playerAnswerHandler);
 		}
+        
+        private function playerAnswerHandler(e:CluedoEvent):void 
+        {
+            removeGlow();
+        }
 		
 		private function startWaitAnswerHandler(e:CluedoEvent):void 
 		{
@@ -42,6 +48,8 @@ package
 					}
 				}
 			}
+            else
+                removeGlow();
 		}
 		
 		private function removeGlow():void
@@ -50,8 +58,13 @@ package
 			for (var i:int = 0; i < len; i++)
 			{
 				var c:Card = _cards[i] as Card;
-				c.filters = [];
-				c.removeEventListener(MouseEvent.CLICK, cardClickHandler);
+                if (c)
+                {
+                    if (c.filters.length)
+                        c.filters = [];
+                    if (c.hasEventListener(MouseEvent.CLICK))
+                        c.removeEventListener(MouseEvent.CLICK, cardClickHandler);
+                }
 			}
 		}
 		
