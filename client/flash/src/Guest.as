@@ -28,6 +28,7 @@ package
 			g.lineStyle(1);
 			g.beginFill(Model.COLORS[id > 10 ? id - 11 : id - 1]);
 			g.drawCircle(Cell.SIZE / 2, Cell.SIZE / 2, Cell.SIZE / 3);
+			mouseChildren = mouseEnabled = false;
 		}
 		
 		public function go(path:Array):void

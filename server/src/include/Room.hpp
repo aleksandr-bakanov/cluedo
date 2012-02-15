@@ -236,7 +236,7 @@ void * waitNextMove(void * ptr);
 void * waitAutoAnswer(void * ptr);
 
 const char MAX_GUESTS = 6;
-const char ONE_TURN_DELAY = 20;
+const char ONE_TURN_DELAY = 30;
 const char WAIT_ANSWER_DELAY = 20;
 const char MAX_THINK_IMIT = 5;
 

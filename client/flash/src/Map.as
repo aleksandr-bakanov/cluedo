@@ -69,6 +69,7 @@ package
 			}
 			
 			_guestsCon = new Sprite();
+			_guestsCon.mouseChildren = _guestsCon.mouseEnabled = false;
 			addChild(_guestsCon);
 			_guests = [];
 			for (var k:int = 1; k < 7; k++)
@@ -125,13 +126,15 @@ package
 		private function transGuestHandler(e:CluedoEvent):void 
 		{
 			var guest:Guest = _guests[e.data.gt - 1] as Guest;
+			if (guest)
+				guest.teleport(e.data.x, e.data.y);
 			if (e.data.gt == _model.guest)
 			{
 				_model.x = e.data.x;
 				_model.y = e.data.y;
+				if (_model.curGuest == _model.guest && _model.steps)
+					glowCells(_model.x, _model.y, _model.steps);
 			}
-			if (guest)
-				guest.teleport(e.data.x, e.data.y);
 		}
 		
 		private function sGuestMoveHandler(e:CluedoEvent):void 
@@ -186,9 +189,36 @@ package
 			unglowCells();
 			var open:Array = [];
 			var c:Cell = _cells[sy][sx] as Cell;
+			
+			if (steps)
+			{
+				if (MAP[sy][sx] == 'B')
+					open.push(_cells[5][8], _cells[5][15], _cells[7][9], _cells[7][14]);
+				else if (MAP[sy][sx] == 'd')
+					open.push(_cells[12][7], _cells[15][6]);
+				else if (MAP[sy][sx] == 'b')
+					open.push(_cells[9][18], _cells[12][22]);
+				else if (MAP[sy][sx] == 'L')
+					open.push(_cells[14][20], _cells[16][17]);
+				else if (MAP[sy][sx] == 'h')
+					open.push(_cells[18][11], _cells[18][12], _cells[20][14]);
+				else if (MAP[sy][sx] == 'l')
+					open.push(_cells[5][19]);
+				else if (MAP[sy][sx] == 'C')
+					open.push(_cells[19][6]);
+				else if (MAP[sy][sx] == 'k')
+					open.push(_cells[21][17]);
+				else if (MAP[sy][sx] == 's')
+					open.push(_cells[6][4]);
+			}
+			var len:int = open.length;
+			for (var i:int = 0; i < len; i++)
+				(open[i] as Cell).steps = 0;
+			
 			c.steps = steps;
-			open.push(c);
-			var index:int = 0;
+			if (open.indexOf(c) < 0)
+				open.push(c);
+			var index:int = getCellWithSteps(open);
 			while (index >= 0)
 			{
 				c = open[index] as Cell;
@@ -199,35 +229,39 @@ package
 				{
 					cc = _cells[c.yc][c.xc - 1] as Cell;
 					cc.steps = c.steps - 1;
-					open.push(cc);
+					if (open.indexOf(cc) < 0)
+						open.push(cc);
 				}
 				// To right
 				if (c.xc + 1 < MAP_W && MAP[c.yc][c.xc + 1] != '#' && open.indexOf(_cells[c.yc][c.xc + 1]) < 0)
 				{
 					cc = _cells[c.yc][c.xc + 1] as Cell;
 					cc.steps = c.steps - 1;
-					open.push(cc);
+					if (open.indexOf(cc) < 0)
+						open.push(cc);
 				}
 				// To up
 				if (c.yc - 1 >= 0 && MAP[c.yc - 1][c.xc] != '#' && open.indexOf(_cells[c.yc - 1][c.xc]) < 0)
 				{
 					cc = _cells[c.yc - 1][c.xc] as Cell;
 					cc.steps = c.steps - 1;
-					open.push(cc);
+					if (open.indexOf(cc) < 0)
+						open.push(cc);
 				}
 				// To down
 				if (c.yc + 1 < MAP_H && MAP[c.yc + 1][c.xc] != '#' && open.indexOf(_cells[c.yc + 1][c.xc]) < 0)
 				{
 					cc = _cells[c.yc + 1][c.xc] as Cell;
 					cc.steps = c.steps - 1;
-					open.push(cc);
+					if (open.indexOf(cc) < 0)
+						open.push(cc);
 				}
 				c.steps = 0;
 				index = getCellWithSteps(open);
 			}
 			while (open.length)
 			{
-				c = open.pop();
+				c = open.pop() as Cell;
 				c.filters = [new GlowFilter(0x0000FF, 1, 6, 6, 2, 1, true)];
 				c.addEventListener(MouseEvent.CLICK, cellClickHandler);
 				c.addEventListener(MouseEvent.ROLL_OUT, cellRollOutHandler);

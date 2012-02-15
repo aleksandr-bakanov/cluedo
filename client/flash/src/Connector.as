@@ -259,6 +259,8 @@ package
             _model.curGuest = gt;
 			if (gt == _model.guest)
 				_model.steps = fd + sd;
+			else
+				_model.steps = 0;
 			_model.dispatchEvent(new CluedoEvent(CluedoEvent.NEXT_MOVE, { gt:gt, fd:fd, sd:sd, sc:sc } ));
 		}
 		
@@ -270,7 +272,11 @@ package
 			while (len--)
 				path.push(_socket.readByte());
 			if (gt == _model.guest)
+			{
 				_model.steps -= path.length / 2;
+				if (Map.MAP[path[path.length - 1]][[path.length - 2]] != ':')
+					_model.steps = 0;
+			}
 			_model.dispatchEvent(new CluedoEvent(CluedoEvent.S_GUEST_MOVE, { guest:gt, path:path } ));
 		}
 		

@@ -372,6 +372,7 @@ Room::guestMakeMove(void * player, char x, char y)
     Player ** pls = (Player **)players;
     Player * pl = (Player *)player;
     char gt = pl->guest;
+    bool isTransport = false;
     bool success = false;
     vector<char> v;
     int i;
@@ -402,9 +403,12 @@ Room::guestMakeMove(void * player, char x, char y)
             {
                 pl->app = nextApp;
                 success = true;
-                v.clear();
+                isTransport = true;
+                pl->x = x;
+                pl->y = y;
+                /*v.clear();
                 v.push_back(y);
-                v.push_back(x);
+                v.push_back(x);*/
             }
             // No secret path
             else
@@ -442,8 +446,12 @@ Room::guestMakeMove(void * player, char x, char y)
     {
         for (i = 0; i < totalPlayers; i++)
             if (pl = pls[i])
-                pl->sendGuestMakeMove(gt, v);
+                if (!isTransport)
+                    pl->sendGuestMakeMove(gt, v);
+                else
+                    pl->sendTransGuest(gt, x, y);
     }
+    
     pthread_mutex_unlock(&removePlayerMutex);
 }
 
