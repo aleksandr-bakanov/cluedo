@@ -212,6 +212,7 @@ package
 			var ap:int = _socket.readByte();
 			var gt:int = _socket.readByte();
 			var wp:int = _socket.readByte();
+			_model.dispatchEvent(new CluedoEvent(CluedoEvent.S_NO_CARDS));
 			CluedoMain.ttrace(Card.cardToString(ans) + " не имеет: " + Card.cardToString(gt) +
 				", " + Card.cardToString(wp) + ", " + Card.cardToString(ap));
 		}
@@ -233,8 +234,8 @@ package
 			if (ans != _model.guest)
             {
 				CluedoMain.ttrace(Card.cardToString(ans) + " отвечает: " + (card ? Card.cardToString(card) : "???"));
-                _model.dispatchEvent(new CluedoEvent(CluedoEvent.PLAYER_ANSWER));
             }
+			_model.dispatchEvent(new CluedoEvent(CluedoEvent.PLAYER_ANSWER));
 		}
 		
 		private function playerAskHandler():void 

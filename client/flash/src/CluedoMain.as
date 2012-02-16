@@ -21,6 +21,7 @@ package
 		private var _orderPanel:OrderPanel;
 		private var _map:Map;
 		private var _clock:Clock;
+		private var _ansWaitClock:Clock;
 		private var _dice:Dice;
 		private var _cardsPanel:CardsPanel;
 		private var _enquirePanel:EnquirePanel;
@@ -43,6 +44,9 @@ package
 			_orderPanel = new OrderPanel(_model);
 			_map = new Map(_model);
 			_clock = new Clock(_model);
+			_clock.addNormalClockListeners();
+			_ansWaitClock = new Clock(_model);
+			_ansWaitClock.addWaitAnswerClockListeners();
 			_dice = new Dice(_model);
             _dice.addEventListener(MouseEvent.CLICK, showGuessSecretPanel);
 			_cardsPanel = new CardsPanel(_model);
@@ -59,8 +63,11 @@ package
 			_model.addEventListener(CluedoEvent.SHOW_ENQUIRE_PANEL, showEnquirePanel);
 			_model.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
 			_model.addEventListener(CluedoEvent.END_GAME, endGameHandler);
+			_model.addEventListener(CluedoEvent.PLAYER_ANSWER, playerAnswerHandler);
+			_model.addEventListener(CluedoEvent.START_WAIT_ANSWER, startWaitAnswerHandler);
+			_model.addEventListener(CluedoEvent.S_NO_CARDS, playerAnswerHandler);
 		}
-        
+		
         private function connectHandler(e:CluedoEvent):void 
 		{
 			_roomChooser.x = (stage.stageWidth - _roomChooser.width) / 2;
@@ -149,10 +156,27 @@ package
 				removeChild(_dice);
 			if (contains(_cardsPanel))
 				removeChild(_cardsPanel);
+			if (contains(_ansWaitClock))
+				removeChild(_ansWaitClock);
 			if (!contains(_roomChooser))
 				addChild(_roomChooser);
 		}
-        
+		
+		private function startWaitAnswerHandler(e:CluedoEvent):void 
+		{
+			if (!contains(_ansWaitClock))
+			{
+				_ansWaitClock.x = stage.stageWidth - _ansWaitClock.width * 2;
+				addChild(_ansWaitClock);
+			}
+		}
+		
+		private function playerAnswerHandler(e:CluedoEvent):void 
+		{
+			if (contains(_ansWaitClock))
+				removeChild(_ansWaitClock);
+		}
+		
 		private function showGuessSecretPanel(e:MouseEvent):void 
 		{
 			if (!contains(_guessSecretPanel))
