@@ -36,13 +36,20 @@ package
 		public static const C_ASK:int = 10;
 		public static const C_ANSWER:int = 12;
 		public static const C_GUESS_SECRET:int = 14;
+		public static const C_NO_CARDS:int = 16;
+		public static const C_END_TURN:int = 18;
 		
 		private var _socket:Socket;
 		private var _lastComSize:int;
 		private var _model:Model;
+		private var _host:String;
+		private var _port:int;
 		
-		public function Connector(model:Model) 
+		public function Connector(model:Model, host:String, port:int) 
 		{
+			_host = host;
+			_port = port;
+			CluedoMain.ttrace("Connect to " + _host + ":" + _port);
 			_model = model;
 			_lastComSize = 0;
 			configureModelListeners();
@@ -57,8 +64,10 @@ package
 			_model.addEventListener(CluedoEvent.C_ASK, sendAsk);
 			_model.addEventListener(CluedoEvent.C_ANSWER, sendAnswer);
 			_model.addEventListener(CluedoEvent.C_GUESS_SECRET, sendGuessSecret);
+			_model.addEventListener(CluedoEvent.C_NO_CARDS, sendNoCards);
+			_model.addEventListener(CluedoEvent.C_END_TURN, sendEndTurn);
 		}
-        
+		
         private function configureSocket():void
 		{
 			_socket = new Socket();
@@ -68,7 +77,7 @@ package
 			_socket.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
 			_socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
 			_socket.addEventListener(ProgressEvent.SOCKET_DATA, socketDataHandler);
-			_socket.connect("192.168.1.3", 7003);
+			_socket.connect(_host, _port);
 		}
         
         private function socketDataHandler(e:ProgressEvent):void 
@@ -275,7 +284,7 @@ package
 			if (gt == _model.guest)
 			{
 				_model.steps -= path.length / 2;
-				if (Map.MAP[path[path.length - 1]][[path.length - 2]] != ':')
+				if (Map.MAP[path[path.length - 1]][path[path.length - 2]] != ':')
 					_model.steps = 0;
 			}
 			_model.dispatchEvent(new CluedoEvent(CluedoEvent.S_GUEST_MOVE, { guest:gt, path:path } ));
@@ -312,6 +321,20 @@ package
 		{
 			var ag:int = _socket.readByte();
 			_model.dispatchEvent(new CluedoEvent(CluedoEvent.AVAILABLE_GUESTS, ag));
+		}
+		
+		private function sendNoCards(e:CluedoEvent):void 
+		{
+			_socket.writeShort(2);
+			_socket.writeShort(C_NO_CARDS);
+			_socket.flush();
+		}
+		
+		private function sendEndTurn(e:CluedoEvent):void 
+		{
+			_socket.writeShort(2);
+			_socket.writeShort(C_END_TURN);
+			_socket.flush();
 		}
 		
 		private function noRoomHandler():void 

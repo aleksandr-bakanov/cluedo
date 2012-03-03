@@ -13,13 +13,13 @@ using namespace std;
 //======================================================================
 struct Cell
 {
-    char x;
-    char y;
-    char px; // parent X
-    char py; // parent Y
-    char f;
-    char g;
-    char h;
+	char x;
+	char y;
+	char px; // parent X
+	char py; // parent Y
+	char f;
+	char g;
+	char h;
 };
 
 /**
@@ -32,175 +32,179 @@ public:
 //======================================================================
 //  Methods
 //======================================================================
-    /**
-     * Constructor. Store socket descriptor in the private field.
-     * @param   socketFd    Socket file descriptor.
-     */
-    Player(int socketFd);
-    ~Player();
-    /**
-     * Function run listening process. When client close connection
-     * this function return.
-     */
-    void run();
-    
-    /**
-     * Function resets game params such as guest, x, y, app and cards.
-     */
-    void resetGameInfo();
-    
-    /**
-     * Function send to client available guest ids.
-     * @param   guestMap    bit map: 00100101 - miss Scarlett,
-     *                      mrs. White and professor Plum are available
-     */
-    void sendAvailableGuests(char guestMap);
-    
-    /**
-     * Function send to player result of processing his C_CHOOSE_GUEST
-     * request.
-     */
-    void sendGuestChooseResult(char guestId, bool result);
-    
-    /**
-     * Function adds specified card into the cards array. Returns index
-     * of added card.
-     */
-    char addCard(char card);
-    
-    /**
-     * Function sends to client start game information.
-     */
-    void sendStartInfo(const char * order);
-    
-    /**
-     * Function sends next move info, such as guest id and the dice.
-     */
-    void sendNextMove(char guestId, char firstDie, char secondDie);
-    
-    /**
-     * Function sends S_GUEST_MOVE command.
-     */
-    void sendGuestMakeMove(char guestId, vector<char> &v);
-    
-    /**
-     * Function sends S_PLAYER_ASK command.
-     */
-    void sendPlayerAsk(char enquirer, char gt, char wp, char ap);
-    
-    /**
-     * Function sends S_PLAYER_ANSWER command.
-     */
-    void sendPlayerAnswer(char gt, char card);
-    
-    /**
-     * Function sends S_WAIT_ANSWER command.
-     */
-    void sendWaitAnswer(char gt, char seconds);
-    
-    /**
-     * Function sends S_NO_CARDS command.
-     */
-    void sendNoCards(char guestId, char ap, char gt, char wp);
-    
-    /**
-     * Function sends S_GUESS_SECRET command.
-     */
-    void sendGuessSecret(char guestId, char ap, char gt, char wp);
-    
-    /**
-     * Function sends S_TRANS_GUEST command.
-     */
-    void sendTransGuest(char guestId, char x, char y);
-    
-    // A* function
-    void aStar(char x, char y, char tox, char toy, vector<char> &v);
+	/**
+	 * Constructor. Store socket descriptor in the private field.
+	 * @param   socketFd	Socket file descriptor.
+	 */
+	Player(int socketFd);
+	~Player();
+	/**
+	 * Function run listening process. When client close connection
+	 * this function return.
+	 */
+	void run();
+	
+	/**
+	 * Function resets game params such as guest, x, y, app and cards.
+	 */
+	void resetGameInfo();
+	
+	/**
+	 * Function send to client available guest ids.
+	 * @param   guestMap	bit map: 00100101 - miss Scarlett,
+	 *					  mrs. White and professor Plum are available
+	 */
+	void sendAvailableGuests(char guestMap);
+	
+	/**
+	 * Function send to player result of processing his C_CHOOSE_GUEST
+	 * request.
+	 */
+	void sendGuestChooseResult(char guestId, bool result);
+	
+	/**
+	 * Function adds specified card into the cards array. Returns index
+	 * of added card.
+	 */
+	char addCard(char card);
+	
+	/**
+	 * Function sends to client start game information.
+	 */
+	void sendStartInfo(const char * order);
+	
+	/**
+	 * Function sends next move info, such as guest id and the dice.
+	 */
+	void sendNextMove(char guestId, char firstDie, char secondDie);
+	
+	/**
+	 * Function sends S_GUEST_MOVE command.
+	 */
+	void sendGuestMakeMove(char guestId, vector<char> &v);
+	
+	/**
+	 * Function sends S_PLAYER_ASK command.
+	 */
+	void sendPlayerAsk(char enquirer, char gt, char wp, char ap);
+	
+	/**
+	 * Function sends S_PLAYER_ANSWER command.
+	 */
+	void sendPlayerAnswer(char gt, char card);
+	
+	/**
+	 * Function sends S_WAIT_ANSWER command.
+	 */
+	void sendWaitAnswer(char gt, char seconds);
+	
+	/**
+	 * Function sends S_NO_CARDS command.
+	 */
+	void sendNoCards(char guestId, char ap, char gt, char wp);
+	
+	/**
+	 * Function sends S_GUESS_SECRET command.
+	 */
+	void sendGuessSecret(char guestId, char ap, char gt, char wp);
+	
+	/**
+	 * Function sends S_TRANS_GUEST command.
+	 */
+	void sendTransGuest(char guestId, char x, char y);
+	
+	// A* function
+	void aStar(char x, char y, char tox, char toy, vector<char> &v);
 //======================================================================
 //  Fields
 //======================================================================
-    // Pointer to RoomManager object
-    void * roomManager;
-    // Pointer to current Room object
-    void * room;
-    // Guest id
-    char guest;
-    // True if player in game now.
-    bool inGame;
-    // Guest coordinates
-    char x;
-    char y;
-    // Current appartments
-    char app;
-    char lastAskedApp;
-    // Cards
-    char cards[8];
-    // Intrigues
-    char intrigues[10];
-    // True if now that player's moving.
-    bool myTurn;
-    // Count of available steps.
-    char steps;
-    // Set to true when guest enter room. Player can't move if mustAsk
-    // is true.
-    bool mustAsk;
-    bool isLose;
-    
+	// Pointer to RoomManager object
+	void * roomManager;
+	// Pointer to current Room object
+	void * room;
+	// Guest id
+	char guest;
+	// True if player in game now.
+	bool inGame;
+	// Guest coordinates
+	char x;
+	char y;
+	// Current appartments
+	char app;
+	char lastAskedApp;
+	// Cards
+	char cards[8];
+	// Intrigues
+	char intrigues[10];
+	// True if now that player's moving.
+	bool myTurn;
+	// Count of available steps.
+	char steps;
+	// Set to true when guest enter room. Player can't move if mustAsk
+	// is true.
+	bool mustAsk;
+	bool isLose;
+	
 private:
 //======================================================================
 //  Methods
 //======================================================================
-    /**
-     * Function send bytes from sendBuf to socket.
-     * @param   nbytes  Count of bytes to send.
-     * @return          Sending result.
-     */
-    bool sendData(int nbytes);
-    
-    /**
-     * Function calling when there are at least one full command from
-     * player. Function read command id (short int) from recvBuf[2]
-     * and call appropriate function which will process other data
-     * in received command.
-     */
-    void parse();
-    
-    /**
-     * Function send to client command S_READY, which mean that
-     * server is ready to receive commands from client.
-     */
-    void sendReadyCommand();
-    
-    // C_ENTER_ROOM command handler.
-    void enterRoomHandler();
-    // Send S_NO_ROOM to client.
-    void sendNoRoom();
-    // C_LEAVE_ROOM command handler.
-    void leaveRoomHandler();
-    // C_CHOOSE_GUEST command handler.
-    void chooseGuestHandler();
-    // C_GUEST_MOVE command handler.
-    void makeMoveHandler();
-    // C_ASK command handler
-    void askHandler();
-    // C_ANSWER command handler
-    void answerHandler();
-    // C_GUESS_SECRET command handler
-    void guessSecretHandler();
-    
-    // A* util functions
-    int exist(char x, char y, vector<Cell> &v);
-    int minFCell(vector<Cell> &v);
+	/**
+	 * Function send bytes from sendBuf to socket.
+	 * @param   nbytes  Count of bytes to send.
+	 * @return		  Sending result.
+	 */
+	bool sendData(int nbytes);
+	
+	/**
+	 * Function calling when there are at least one full command from
+	 * player. Function read command id (short int) from recvBuf[2]
+	 * and call appropriate function which will process other data
+	 * in received command.
+	 */
+	void parse();
+	
+	/**
+	 * Function send to client command S_READY, which mean that
+	 * server is ready to receive commands from client.
+	 */
+	void sendReadyCommand();
+	
+	// C_ENTER_ROOM command handler.
+	void enterRoomHandler();
+	// Send S_NO_ROOM to client.
+	void sendNoRoom();
+	// C_LEAVE_ROOM command handler.
+	void leaveRoomHandler();
+	// C_CHOOSE_GUEST command handler.
+	void chooseGuestHandler();
+	// C_GUEST_MOVE command handler.
+	void makeMoveHandler();
+	// C_ASK command handler
+	void askHandler();
+	// C_ANSWER command handler
+	void answerHandler();
+	// C_GUESS_SECRET command handler
+	void guessSecretHandler();
+	// C_NO_CARDS command handler
+	void noCardsHandler();
+	// C_END_TURN command handler
+	void endTurnHandler();
+	
+	// A* util functions
+	int exist(char x, char y, vector<Cell> &v);
+	int minFCell(vector<Cell> &v);
 //======================================================================
 //  Fields
 //======================================================================
-    // Player socket descriptor
-    int socket;
-    // Receive buffer
-    char recvBuf[256];
-    // Send buffer
-    char sendBuf[256];
-    // Current position in recvBuf.
-    int curRecvPos;
+	// Player socket descriptor
+	int socket;
+	// Receive buffer
+	char recvBuf[256];
+	// Send buffer
+	char sendBuf[256];
+	// Current position in recvBuf.
+	int curRecvPos;
 };
 
 //======================================================================
@@ -231,5 +235,7 @@ const short C_GUEST_MOVE = 8;
 const short C_ASK = 10;
 const short C_ANSWER = 12;
 const short C_GUESS_SECRET = 14;
+const short C_NO_CARDS = 16;
+const short C_END_TURN = 18;
 
 #endif /* _PLAYER_ */

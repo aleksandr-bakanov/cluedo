@@ -8,10 +8,10 @@ using namespace std;
 
 union BCUnion
 {
-    char bytes[4];
-    int integer;
-    short shortInteger;
-    bool boolean;
+	char bytes[4];
+	int integer;
+	short shortInteger;
+	bool boolean;
 };
 
 const int INT_SIZE = 4;

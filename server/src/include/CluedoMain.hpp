@@ -18,8 +18,8 @@ using namespace std;
 
 struct PlayerStartParams
 {
-    void * roomManagerPointer;
-    int socketFd;
+	void * roomManagerPointer;
+	int socketFd;
 };
 
 /**

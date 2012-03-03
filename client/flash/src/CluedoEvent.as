@@ -26,6 +26,8 @@ package
 		public static const END_GAME:String = "end_game";
 		public static const PLAYER_ANSWER:String = "player_answer";
 		public static const S_NO_CARDS:String = "s_no_cards";
+		public static const C_NO_CARDS:String = "c_no_cards";
+		public static const C_END_TURN:String = "c_end_turn";
 		
 		public var data:Object;
 		

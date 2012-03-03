@@ -26,6 +26,8 @@ package
 		private var _cardsPanel:CardsPanel;
 		private var _enquirePanel:EnquirePanel;
 		private var _guessSecretPanel:GuessSecretPanel;
+		private var _noCardsButton:Button;
+		private var _endTurnButton:Button;
 
 		public function CluedoMain():void 
 		{
@@ -52,7 +54,11 @@ package
 			_cardsPanel = new CardsPanel(_model);
 			_enquirePanel = new EnquirePanel(_model);
 			_guessSecretPanel = new GuessSecretPanel(_model);
-			_connector = new Connector(_model);
+			_noCardsButton = new Button("No cards");
+			_noCardsButton.addEventListener(MouseEvent.CLICK, noCardsHandler);
+			_endTurnButton = new Button("End turn");
+			_endTurnButton.addEventListener(MouseEvent.CLICK, endTurnHandler);
+			_connector = new Connector(_model, stage.loaderInfo.parameters.host, stage.loaderInfo.parameters.port);
 		}
 		
 		private function configureModelListeners():void
@@ -134,13 +140,22 @@ package
         
         private function nextMoveHandler(e:CluedoEvent):void 
 		{
-            if (_model.curGuest != _model.guest)
-            {
-                if (contains(_enquirePanel))
-                    removeChild(_enquirePanel);
-                if (contains(_guessSecretPanel))
-                    removeChild(_guessSecretPanel);
-            }
+			if (contains(_enquirePanel))
+				removeChild(_enquirePanel);
+			if (contains(_guessSecretPanel))
+				removeChild(_guessSecretPanel);
+			var id:int = (e.data.gt > 10 ? e.data.gt - 10 : e.data.gt);
+			if (id == _model.guest)
+			{
+				if (!contains(_endTurnButton))
+				{
+					_endTurnButton.x = stage.stageWidth - _endTurnButton.width;
+					_endTurnButton.y = stage.stageHeight - _output.height - _endTurnButton.height;
+					addChild(_endTurnButton);
+				}
+			}
+			else if (contains(_endTurnButton))
+				removeChild(_endTurnButton);
 		}
 		
 		private function endGameHandler(e:CluedoEvent):void 
@@ -158,6 +173,10 @@ package
 				removeChild(_cardsPanel);
 			if (contains(_ansWaitClock))
 				removeChild(_ansWaitClock);
+			if (contains(_noCardsButton))
+				removeChild(_noCardsButton);
+			if (contains(_endTurnButton))
+				removeChild(_endTurnButton);
 			if (!contains(_roomChooser))
 				addChild(_roomChooser);
 		}
@@ -169,12 +188,26 @@ package
 				_ansWaitClock.x = stage.stageWidth - _ansWaitClock.width * 2;
 				addChild(_ansWaitClock);
 			}
+			if (e.data.gt == _model.guest && !contains(_noCardsButton))
+			{
+				if (_model.cards.indexOf(_model.suspectAp) < 0 &&
+					_model.cards.indexOf(_model.suspectGt) < 0 &&
+					_model.cards.indexOf(_model.suspectWp) < 0)
+				{
+					_noCardsButton.y = stage.stageHeight - _output.height - _noCardsButton.height;
+					addChild(_noCardsButton);
+				}
+			}
+			if (contains(_endTurnButton))
+				removeChild(_endTurnButton);
 		}
 		
 		private function playerAnswerHandler(e:CluedoEvent):void 
 		{
 			if (contains(_ansWaitClock))
 				removeChild(_ansWaitClock);
+			if (contains(_noCardsButton))
+				removeChild(_noCardsButton);
 		}
 		
 		private function showGuessSecretPanel(e:MouseEvent):void 
@@ -186,6 +219,20 @@ package
 				_guessSecretPanel.y = 50;
 				addChild(_guessSecretPanel);
 			}
+		}
+		
+		private function noCardsHandler(e:MouseEvent):void
+		{
+			_model.dispatchEvent(new CluedoEvent(CluedoEvent.C_NO_CARDS));
+		}
+		
+		private function endTurnHandler(e:MouseEvent):void
+		{
+			if (contains(_enquirePanel))
+				removeChild(_enquirePanel);
+			if (contains(_guessSecretPanel))
+				removeChild(_guessSecretPanel);
+			_model.dispatchEvent(new CluedoEvent(CluedoEvent.C_END_TURN));
 		}
 		
 		private function configureOutput():void 

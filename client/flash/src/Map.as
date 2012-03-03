@@ -85,9 +85,9 @@ package
 		
 		private function checkStepsHandler(e:CluedoEvent):void 
 		{
-			if (MAP[_model.y][_model.x] != ":")
+			if (MAP[_model.y][_model.x] != ':')
 				_model.dispatchEvent(new CluedoEvent(CluedoEvent.SHOW_ENQUIRE_PANEL, getAppByCoordinates(_model.x, _model.y)));
-			else if ((_guests.indexOf(e.target) + 1) == _model.guest && _model.steps && MAP[_model.y][_model.x] == ":")
+			else if ((_guests.indexOf(e.currentTarget) + 1) == _model.guest && _model.steps && MAP[_model.y][_model.x] == ':')
 				glowCells(_model.x, _model.y, _model.steps);
 		}
 		
