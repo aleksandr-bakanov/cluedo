@@ -8,7 +8,7 @@
 	<script src="js/swfobject.js"></script>
 	<script>
 		var flashvars = {
-			host:"37.99.219.106",
+			host:"localhost",
 			port:7003
 		};
 		var params = {

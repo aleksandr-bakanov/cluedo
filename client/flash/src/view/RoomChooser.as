@@ -1,4 +1,4 @@
-package  
+package view 
 {
 	import flash.display.Graphics;
 	import flash.display.Sprite;
@@ -8,6 +8,7 @@ package
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	import flash.filters.BitmapFilterQuality;
+	import model.*;
 	
 	/**
 	 * ...

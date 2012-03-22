@@ -1,4 +1,4 @@
-package  
+package view 
 {
 	import flash.display.Sprite;
 	import flash.text.TextField;

@@ -1,4 +1,4 @@
-package  
+package control 
 {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -7,6 +7,8 @@ package
 	import flash.events.SecurityErrorEvent;
 	import flash.net.Socket;
 	import flash.utils.Endian;
+	import model.*;
+	import view.*;
 	
 	/**
 	 * ...

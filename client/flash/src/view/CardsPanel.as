@@ -1,10 +1,11 @@
-package  
+package view 
 {
 	import flash.display.DisplayObject;
 	import flash.display.InteractiveObject;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.filters.GlowFilter;
+	import model.*;
 	
 	/**
 	 * ...

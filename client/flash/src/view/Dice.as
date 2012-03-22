@@ -1,9 +1,10 @@
-package  
+package view 
 {
 	import flash.display.Sprite;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
+	import model.*;
 	
 	/**
 	 * ...

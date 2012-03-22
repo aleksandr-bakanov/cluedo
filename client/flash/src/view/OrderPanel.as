@@ -1,7 +1,8 @@
-package  
+package view 
 {
 	import flash.display.Graphics;
 	import flash.display.Sprite;
+	import model.*;
 	
 	/**
 	 * ...

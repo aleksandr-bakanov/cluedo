@@ -5,6 +5,9 @@ package
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
+	import control.*;
+	import model.*;
+	import view.*;
 
 	/**
 	 * ...

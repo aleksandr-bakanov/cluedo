@@ -1,4 +1,4 @@
-package  
+package view 
 {
 	import flash.display.DisplayObject;
 	import flash.display.Graphics;
@@ -9,6 +9,7 @@ package
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	import flash.filters.BitmapFilterQuality;
+	import model.*;
 	
 	/**
 	 * ...

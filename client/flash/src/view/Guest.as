@@ -1,9 +1,10 @@
-package  
+package view 
 {
 	import flash.display.Graphics;
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
+	import model.*;
 	
 	/**
 	 * ...
