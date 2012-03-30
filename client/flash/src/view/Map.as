@@ -5,7 +5,7 @@ package view
 	import flash.events.MouseEvent;
 	import flash.filters.GlowFilter;
 	import model.*;
-	
+
 	/**
 	 * ...
 	 * @author bav
@@ -41,12 +41,12 @@ package view
 				['#','#','#','#','#','#','#',':',':','#','#','#','#','#','#',':',':','#','#','#','#','#','#','#'],
 				['#','#','#','#','#','#','#',':','#','#','#','#','#','#','#','#',':','#','#','#','#','#','#','#']
 			];
-			private var _cells:Array;
-			private var _model:Model;
-			private var _guests:Array;
-			private var _guestsCon:Sprite;
-			private var _glowed:Array;
-		
+		private var _cells:Array;
+		private var _model:Model;
+		private var _guests:Array;
+		private var _guestsCon:Sprite;
+		private var _glowed:Array;
+
 		public function Map(model:Model) 
 		{
 			_model = model;
@@ -68,7 +68,7 @@ package view
 					addChild(cell);
 				}
 			}
-			
+
 			_guestsCon = new Sprite();
 			_guestsCon.mouseChildren = _guestsCon.mouseEnabled = false;
 			addChild(_guestsCon);
@@ -83,7 +83,7 @@ package view
 			initGuestsPositions();
 			configureModelListeners();
 		}
-		
+
 		private function checkStepsHandler(e:CluedoEvent):void 
 		{
 			if (MAP[_model.y][_model.x] != ':')
@@ -91,7 +91,7 @@ package view
 			else if ((_guests.indexOf(e.currentTarget) + 1) == _model.guest && _model.steps && MAP[_model.y][_model.x] == ':')
 				glowCells(_model.x, _model.y, _model.steps);
 		}
-		
+
 		private function getAppByCoordinates(x:int, y:int):int
 		{
 			var r:int = 0;
@@ -116,14 +116,14 @@ package view
 				r = Card.AP_STUDY;
 			return r;
 		}
-		
+
 		private function configureModelListeners():void
 		{
 			_model.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
 			_model.addEventListener(CluedoEvent.S_GUEST_MOVE, sGuestMoveHandler);
 			_model.addEventListener(CluedoEvent.TRANS_GUEST, transGuestHandler);
 		}
-		
+
 		private function transGuestHandler(e:CluedoEvent):void 
 		{
 			var guest:Guest = _guests[e.data.gt - 1] as Guest;
@@ -137,7 +137,7 @@ package view
 					glowCells(_model.x, _model.y, _model.steps);
 			}
 		}
-		
+
 		private function sGuestMoveHandler(e:CluedoEvent):void 
 		{
 			var guest:Guest = _guests[e.data.guest - 1] as Guest;
@@ -149,7 +149,7 @@ package view
 			if (guest)
 				guest.go(e.data.path);
 		}
-		
+
 		private function nextMoveHandler(e:CluedoEvent):void 
 		{
 			var id:int = (e.data.gt > 10 ? e.data.gt - 10 : e.data.gt);
@@ -158,7 +158,7 @@ package view
 			else
 				unglowCells();
 		}
-		
+
 		private function initGuestsPositions():void
 		{
 			for (var i:int = 0; i < 6; i++)
@@ -184,13 +184,13 @@ package view
 				}
 			}
 		}
-		
+
 		private function glowCells(sx:int, sy:int, steps:int):void
 		{
 			unglowCells();
 			var open:Array = [];
 			var c:Cell = _cells[sy][sx] as Cell;
-			
+
 			if (steps)
 			{
 				if (MAP[sy][sx] == 'B')
@@ -215,7 +215,7 @@ package view
 			var len:int = open.length;
 			for (var i:int = 0; i < len; i++)
 				(open[i] as Cell).steps = 0;
-			
+
 			c.steps = steps;
 			if (open.indexOf(c) < 0)
 				open.push(c);
@@ -270,7 +270,7 @@ package view
 				_glowed.push(c);
 			}
 		}
-		
+
 		private function getCellWithSteps(list:Array):int
 		{
 			var len:int = list.length;
@@ -279,7 +279,7 @@ package view
 					return i;
 			return -1;
 		}
-		
+
 		private function unglowCells():void
 		{
 			while (_glowed.length)
@@ -291,15 +291,15 @@ package view
 				c.removeEventListener(MouseEvent.ROLL_OVER, cellRollOverHandler);
 			}
 		}
-		
+
 		private function cellRollOverHandler(e:MouseEvent):void
 		{
-			
+
 		}
 		
 		private function cellRollOutHandler(e:MouseEvent):void
 		{
-			
+
 		}
 		
 		private function cellClickHandler(e:MouseEvent):void
@@ -308,7 +308,7 @@ package view
 			unglowCells();
 			_model.dispatchEvent(new CluedoEvent(CluedoEvent.C_GUEST_MOVE, { x:c.xc, y:c.yc } ));
 		}
-		
+
 	}
 
 }

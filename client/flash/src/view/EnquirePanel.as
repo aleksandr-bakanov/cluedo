@@ -11,7 +11,7 @@ package view
 	import flash.text.TextFormatAlign;
 	import flash.text.TextFormat;
 	import model.*;
-	
+
 	/**
 	 * ...
 	 * @author bav
@@ -21,14 +21,14 @@ package view
 		private var _model:Model;
 		private var _guests:Sprite;
 		private var _weapons:Sprite;
-		
+
 		private var _curGuest:int;
 		private var _curWeapon:int;
 		private var _curAppartments:int;
-		
+
 		private var _app:Card;
 		private var _ok:TextField;
-		
+
 		public function EnquirePanel(model:Model) 
 		{
 			_model = model;
@@ -52,9 +52,8 @@ package view
 			_ok.y = 230;
 			addChild(_ok);
 			_ok.addEventListener(MouseEvent.CLICK, okClickHandler);
-			configureModelListeners();
 		}
-		
+
 		private function okClickHandler(e:MouseEvent):void 
 		{
 			if (_curGuest && _curWeapon)
@@ -63,12 +62,7 @@ package view
 				parent.removeChild(this);
 			}
 		}
-		
-		private function configureModelListeners():void 
-		{
-			
-		}
-		
+
 		private function initLists():void
 		{
 			_guests = new Sprite();
@@ -95,7 +89,7 @@ package view
 			addChild(_guests);
 			addChild(_weapons);
 		}
-		
+
 		private function guestClickHandler(e:MouseEvent):void 
 		{
 			removeFilters(_guests);
@@ -103,7 +97,7 @@ package view
 			_curGuest = c.id;
 			c.filters = [new GlowFilter(0x0000FF, 1, 6, 6, 2, 1, true)];
 		}
-		
+
 		private function weaponClickHandler(e:MouseEvent):void 
 		{
 			removeFilters(_weapons);
@@ -111,14 +105,14 @@ package view
 			_curWeapon = c.id;
 			c.filters = [new GlowFilter(0x0000FF, 1, 6, 6, 2, 1, true)];
 		}
-		
+
 		private function removeFilters(p:DisplayObjectContainer):void
 		{
 			var len:int = p.numChildren;
 			for (var i:int = 0; i < len; i++)
 				p.getChildAt(i).filters = [];
 		}
-		
+
 		public function setApp(id:int):void 
 		{
 			_curGuest = _curAppartments = 0;

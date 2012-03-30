@@ -5,7 +5,7 @@ package view
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 	import model.*;
-	
+
 	/**
 	 * ...
 	 * @author bav
@@ -17,7 +17,7 @@ package view
 		private var _timer:Timer;
 		private var _id:int;
 		private var _model:Model;
-		
+
 		public function Guest(model:Model, id:int) 
 		{
 			_id = id;
@@ -31,7 +31,7 @@ package view
 			g.drawCircle(Cell.SIZE / 2, Cell.SIZE / 2, Cell.SIZE / 3);
 			mouseChildren = mouseEnabled = false;
 		}
-		
+
 		public function go(path:Array):void
 		{
 			while (path.length)
@@ -39,7 +39,7 @@ package view
 			if (!_timer.running)
 				_timer.start();
 		}
-		
+
 		public function teleport(x:int, y:int):void
 		{
 			_timer.reset();
@@ -49,7 +49,7 @@ package view
 			this.x = Cell.SIZE * x;
 			this.y = Cell.SIZE * y;
 		}
-		
+
 		private function nextStep(e:TimerEvent = null):void
 		{
 			if (_path.length >= 2)
@@ -64,7 +64,7 @@ package view
 					dispatchEvent(new CluedoEvent(CluedoEvent.CHECK_STEPS));
 			}
 		}
-		
+
 	}
 
 }

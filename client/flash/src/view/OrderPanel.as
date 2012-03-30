@@ -3,7 +3,7 @@ package view
 	import flash.display.Graphics;
 	import flash.display.Sprite;
 	import model.*;
-	
+
 	/**
 	 * ...
 	 * @author bav
@@ -12,7 +12,7 @@ package view
 	{
 		private var _model:Model;
 		private var _marker:Sprite;
-		
+
 		public function OrderPanel(model:Model) 
 		{
 			_model = model;
@@ -22,7 +22,7 @@ package view
 			_marker.graphics.drawRect(0, 0, 30, 30);
 			_marker.y = 5;
 		}
-		
+
 		private function nextMoveHandler(e:CluedoEvent):void 
 		{
 			var index:int = e.data.gt as int;
@@ -31,7 +31,7 @@ package view
 			if (!contains(_marker))
 				addChild(_marker);
 		}
-		
+
 		public function init(order:Array):void
 		{
 			var g:Graphics = graphics;
@@ -48,7 +48,7 @@ package view
 				g.endFill();
 			}
 		}
-		
+
 	}
 
 }

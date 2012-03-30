@@ -63,7 +63,7 @@ package
 			_endTurnButton.addEventListener(MouseEvent.CLICK, endTurnHandler);
 			_connector = new Connector(_model, stage.loaderInfo.parameters.host, stage.loaderInfo.parameters.port);
 		}
-		
+
 		private function configureModelListeners():void
 		{
 			_model.addEventListener(CluedoEvent.CONNECT, connectHandler);
@@ -76,16 +76,16 @@ package
 			_model.addEventListener(CluedoEvent.START_WAIT_ANSWER, startWaitAnswerHandler);
 			_model.addEventListener(CluedoEvent.S_NO_CARDS, playerAnswerHandler);
 		}
-		
-        private function connectHandler(e:CluedoEvent):void 
+
+		private function connectHandler(e:CluedoEvent):void 
 		{
 			_roomChooser.x = (stage.stageWidth - _roomChooser.width) / 2;
 			_roomChooser.y = 150;
-            if (!contains(_roomChooser))
-                addChild(_roomChooser);
+			if (!contains(_roomChooser))
+				addChild(_roomChooser);
 		}
-        
-        private function availableGuestHandler(e:CluedoEvent):void 
+
+		private function availableGuestHandler(e:CluedoEvent):void 
 		{
 			if (contains(_roomChooser))
 				removeChild(_roomChooser);
@@ -96,8 +96,8 @@ package
 				addChild(_guestChooser);
 			}
 		}
-        
-        private function initGameHandler(e:CluedoEvent):void 
+
+		private function initGameHandler(e:CluedoEvent):void 
 		{
 			if (contains(_guestChooser))
 				removeChild(_guestChooser);
@@ -129,8 +129,8 @@ package
 				addChild(_cardsPanel);
 			}
 		}
-        
-        private function showEnquirePanel(e:CluedoEvent):void 
+
+		private function showEnquirePanel(e:CluedoEvent):void 
 		{
 			if (!contains(_enquirePanel))
 			{
@@ -140,8 +140,8 @@ package
 				addChild(_enquirePanel);
 			}
 		}
-        
-        private function nextMoveHandler(e:CluedoEvent):void 
+
+		private function nextMoveHandler(e:CluedoEvent):void 
 		{
 			if (contains(_enquirePanel))
 				removeChild(_enquirePanel);
@@ -160,7 +160,7 @@ package
 			else if (contains(_endTurnButton))
 				removeChild(_endTurnButton);
 		}
-		
+
 		private function endGameHandler(e:CluedoEvent):void 
 		{
 			CluedoMain.ttrace("CluedoMain::endGameHandler");
@@ -183,7 +183,7 @@ package
 			if (!contains(_roomChooser))
 				addChild(_roomChooser);
 		}
-		
+
 		private function startWaitAnswerHandler(e:CluedoEvent):void 
 		{
 			if (!contains(_ansWaitClock))
@@ -204,7 +204,7 @@ package
 			if (contains(_endTurnButton))
 				removeChild(_endTurnButton);
 		}
-		
+
 		private function playerAnswerHandler(e:CluedoEvent):void 
 		{
 			if (contains(_ansWaitClock))
@@ -212,7 +212,7 @@ package
 			if (contains(_noCardsButton))
 				removeChild(_noCardsButton);
 		}
-		
+
 		private function showGuessSecretPanel(e:MouseEvent):void 
 		{
 			if (!contains(_guessSecretPanel))
@@ -223,12 +223,12 @@ package
 				addChild(_guessSecretPanel);
 			}
 		}
-		
+
 		private function noCardsHandler(e:MouseEvent):void
 		{
 			_model.dispatchEvent(new CluedoEvent(CluedoEvent.C_NO_CARDS));
 		}
-		
+
 		private function endTurnHandler(e:MouseEvent):void
 		{
 			if (contains(_enquirePanel))
@@ -237,7 +237,7 @@ package
 				removeChild(_guessSecretPanel);
 			_model.dispatchEvent(new CluedoEvent(CluedoEvent.C_END_TURN));
 		}
-		
+
 		private function configureOutput():void 
 		{
 			_output = new TextField();
@@ -248,7 +248,7 @@ package
 			_output.defaultTextFormat = new TextFormat("_typewriter");
 			addChild(_output);
 		}
-		
+
 		public static function ttrace(obj:Object):void
 		{
 			_output.appendText(String(obj) + '\n');

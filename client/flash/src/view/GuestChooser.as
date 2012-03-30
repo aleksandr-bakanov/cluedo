@@ -10,7 +10,7 @@ package view
 	import flash.text.TextFormatAlign;
 	import flash.filters.BitmapFilterQuality;
 	import model.*;
-	
+
 	/**
 	 * ...
 	 * @author bav
@@ -19,14 +19,14 @@ package view
 	{
 		private var _model:Model;
 		private var _buttons:Array;
-		
+
 		public function GuestChooser(model:Model) 
 		{
 			_model = model;
 			_model.addEventListener(CluedoEvent.AVAILABLE_GUESTS, availableGuestsHandler);
 			init();
 		}
-		
+
 		private function init():void
 		{
 			var g:Graphics = graphics;
@@ -51,14 +51,14 @@ package view
 			}
 			filters = [new DropShadowFilter(0, 0, 0, 0.6, 5, 5, 2, BitmapFilterQuality.HIGH)];
 		}
-		
+
 		private function buttonClickHandler(e:MouseEvent):void
 		{
-            var gt:int = parseInt((e.currentTarget as DisplayObject).name);
-            if (gt)
-                _model.dispatchEvent(new CluedoEvent(CluedoEvent.CHOOSE_GUEST, gt));
+			var gt:int = parseInt((e.currentTarget as DisplayObject).name);
+			if (gt)
+				_model.dispatchEvent(new CluedoEvent(CluedoEvent.CHOOSE_GUEST, gt));
 		}
-		
+
 		private function availableGuestsHandler(e:CluedoEvent):void 
 		{
 			var ag:int = e.data as int;
@@ -78,7 +78,7 @@ package view
 				g.endFill();
 			}
 		}
-		
+
 	}
 
 }

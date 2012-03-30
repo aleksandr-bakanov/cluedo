@@ -11,7 +11,7 @@ package view
 	import flash.text.TextFormatAlign;
 	import flash.text.TextFormat;
 	import model.*;
-	
+
 	/**
 	 * ...
 	 * @author bav
@@ -22,14 +22,14 @@ package view
 		private var _apps:Sprite;
 		private var _guests:Sprite;
 		private var _weapons:Sprite;
-		
+
 		private var _curGuest:int;
 		private var _curWeapon:int;
 		private var _curAppartments:int;
-		
+
 		private var _ok:TextField;
 		private var _cancel:TextField;
-		
+
 		public function GuessSecretPanel(model:Model) 
 		{
 			_model = model;
@@ -39,7 +39,7 @@ package view
 			g.endFill();
 			filters = [new DropShadowFilter(0, 0, 0, 0.6, 5, 5, 2, BitmapFilterQuality.HIGH)];
 			initLists();
-			
+
 			_ok = new TextField();
 			_ok.defaultTextFormat = new TextFormat("_typewriter", 12, 0, null, null, null, null, null, TextFormatAlign.CENTER);
 			_ok.selectable = false;
@@ -50,7 +50,7 @@ package view
 			_ok.y = 230;
 			addChild(_ok);
 			_ok.addEventListener(MouseEvent.CLICK, okClickHandler);
-			
+
 			_cancel = new TextField();
 			_cancel.defaultTextFormat = new TextFormat("_typewriter", 12, 0, null, null, null, null, null, TextFormatAlign.CENTER);
 			_cancel.selectable = false;
@@ -61,10 +61,8 @@ package view
 			_cancel.y = 230;
 			addChild(_cancel);
 			_cancel.addEventListener(MouseEvent.CLICK, cancelClickHandler);
-			
-			configureModelListeners();
 		}
-		
+
 		private function cancelClickHandler(e:MouseEvent):void 
 		{
 			_curWeapon = _curGuest = _curAppartments = 0;
@@ -74,7 +72,7 @@ package view
 			if (parent)
 				parent.removeChild(this);
 		}
-		
+
 		private function okClickHandler(e:MouseEvent):void 
 		{
 			if (_curGuest && _curWeapon && _curAppartments)
@@ -84,12 +82,7 @@ package view
 					parent.removeChild(this);
 			}
 		}
-		
-		private function configureModelListeners():void 
-		{
-			
-		}
-		
+
 		private function initLists():void
 		{
 			_guests = new Sprite();
@@ -126,7 +119,7 @@ package view
 			addChild(_weapons);
 			addChild(_apps);
 		}
-		
+
 		private function guestClickHandler(e:MouseEvent):void 
 		{
 			removeFilters(_guests);
@@ -134,7 +127,7 @@ package view
 			_curGuest = c.id;
 			c.filters = [new GlowFilter(0x0000FF, 1, 6, 6, 2, 1, true)];
 		}
-		
+
 		private function weaponClickHandler(e:MouseEvent):void 
 		{
 			removeFilters(_weapons);
@@ -142,7 +135,7 @@ package view
 			_curWeapon = c.id;
 			c.filters = [new GlowFilter(0x0000FF, 1, 6, 6, 2, 1, true)];
 		}
-		
+
 		private function appClickHandler(e:MouseEvent):void 
 		{
 			removeFilters(_apps);
@@ -150,14 +143,14 @@ package view
 			_curAppartments = c.id;
 			c.filters = [new GlowFilter(0x0000FF, 1, 6, 6, 2, 1, true)];
 		}
-		
+
 		private function removeFilters(p:DisplayObjectContainer):void
 		{
 			var len:int = p.numChildren;
 			for (var i:int = 0; i < len; i++)
 				p.getChildAt(i).filters = [];
 		}
-		
+
 		public function clear():void 
 		{
 			_curWeapon = _curGuest = _curAppartments = 0;

@@ -7,7 +7,7 @@ package view
 	import flash.text.TextFormatAlign;
 	import flash.utils.Timer;
 	import model.*;
-	
+
 	/**
 	 * ...
 	 * @author bav
@@ -18,7 +18,7 @@ package view
 		private var _timer:Timer;
 		private var _seconds:int;
 		private var _model:Model;
-		
+
 		public function Clock(model:Model) 
 		{
 			_model = model;
@@ -30,29 +30,29 @@ package view
 			_field.selectable = false;
 			_field.defaultTextFormat = new TextFormat("_typewriter", 12, 0, null, null, null, null, null, TextFormatAlign.RIGHT);
 			addChild(_field);
-			
+
 			_seconds = 0;
 			_timer = new Timer(1000);
 			_timer.addEventListener(TimerEvent.TIMER, timerHandler);
 		}
-		
+
 		public function addNormalClockListeners():void
 		{
 			_model.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
 			_model.addEventListener(CluedoEvent.END_GAME, endGameHandler);
 		}
-		
+
 		public function addWaitAnswerClockListeners():void
 		{
 			_model.addEventListener(CluedoEvent.START_WAIT_ANSWER, nextMoveHandler);
 			_model.addEventListener(CluedoEvent.END_GAME, endGameHandler);
 		}
-		
+
 		private function endGameHandler(e:CluedoEvent):void 
 		{
 			_timer.reset();
 		}
-		
+
 		private function timerHandler(e:TimerEvent):void 
 		{
 			if (_seconds > 0)
@@ -60,14 +60,14 @@ package view
 			else
 				_timer.stop();
 		}
-		
+
 		private function nextMoveHandler(e:CluedoEvent):void 
 		{
 			_seconds = e.data.sc as int;
 			if (!_timer.running)
 				_timer.start();
 		}
-		
+
 	}
 
 }

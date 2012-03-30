@@ -8,44 +8,44 @@ in two bytes folowed by params (zero or more) specified for each
 command.
 For example command C_ENTER_ROOM:
  2  2  1	<-- length of fields in bytes
-[3][2][5]   <-- values into fields
+[3][2][5]	<-- values into fields
 This command mean that client want to enter into room for five players.
 
 ========================================================================
 	Server side commands
 ========================================================================
-1   - S_READY. The first command which server send to client after
+1	- S_READY. The first command which server send to client after
 	creating Player object. Right after send this command player thread
 	blocks in a read() function.
 
-3   - S_NO_ROOM. Command sends to client if there are no free rooms of
+3	- S_NO_ROOM. Command sends to client if there are no free rooms of
 	type requested into C_ENTER_ROOM command.
 
-5   - S_AVAILABLE_GUESTS. When client enter to room server send to him
+5	- S_AVAILABLE_GUESTS. When client enter to room server send to him
 	list of available to choose guests. Guest id showed below specify
 	number of the bit in the guest_ids byte that set if this guest is
 	available.
 	Params:
-	guest_ids [1]   - each id occupy one byte. Here is ids:
-		Miss Scarlett   - 1
-		Colonel Mustard - 2
-		Mrs. White	  - 3
-		Reverend Green  - 4
+	guest_ids [1]	- each id occupy one byte. Here is ids:
+		Miss Scarlett	- 1
+		Colonel Mustard	- 2
+		Mrs. White		- 3
+		Reverend Green	- 4
 		Mrs. Peacock	- 5
-		Professor Plum  - 6
+		Professor Plum	- 6
 	For example:
 	00100101 - this mean that miss Scarlett, mrs. White and professor
 		Plum are available.
 
-7   - S_GUEST_CHOOSE_RESULT. This command send to client after his
+7	- S_GUEST_CHOOSE_RESULT. This command send to client after his
 	C_CHOOSE_GUEST request. If result is true player successfuly choose
 	requested guest.
 	Params:
-	(result / guest_id) [1]   - result is stored into seventh bit:
+	(result / guest_id) [1]	- result is stored into seventh bit:
 		01000010	- colonel Mustard is available
 		00000010	- colonel Mustard isn't available
 
-9   - S_START_GAME_INFO. Sending information on start game to each
+9	- S_START_GAME_INFO. Sending information on start game to each
 	player. Command contains player's guest, coordinates and cards.
 	Params:
 	guest_id [1]
@@ -54,7 +54,7 @@ This command mean that client want to enter into room for five players.
 	guests_order [6]
 	cards_ids [n]
 
-11  - S_GUEST_MOVE. Sends if one of the guest move on some coordinates
+11	- S_GUEST_MOVE. Sends if one of the guest move on some coordinates
 	on the map. Note about the map coordinates: point (0,0) is in left
 	up corner, x is a horizontal axis, y - vertical one.
 	Params:
@@ -62,7 +62,7 @@ This command mean that client want to enter into room for five players.
 	x_coordinate [1] ---> n times
 	y_coordinate [1] _/
 
-13  - S_NEXT_MOVE. Command says which guest is moving now and how much
+13	- S_NEXT_MOVE. Command says which guest is moving now and how much
 	move points he has. If second_die is 1 player get the card
 	of intrigue.
 	Params:
@@ -71,32 +71,32 @@ This command mean that client want to enter into room for five players.
 	second_die [1]
 	seconds_for_move [1]
 
-15  - S_PLAYER_ASK. Some guest suspect room, murderer and weapon.
+15	- S_PLAYER_ASK. Some guest suspect room, murderer and weapon.
 	Params:
 	enquirer [1] - id of the guest who makes suspection.
 	room [1]
 	guest [1]
 	weapon [1]
 
-17  - S_PLAYER_ANSWER. Some player answer on suspect.
+17	- S_PLAYER_ANSWER. Some player answer on suspect.
 	Params:
 	answered_guest [1]
 	card [1] - optionally, sends only to the enquirer.
 
-19  - S_WAIT_ANSWER. Command means that server starts to wait answer
+19	- S_WAIT_ANSWER. Command means that server starts to wait answer
 	from specified guest, specified count of seconds.
 	Params:
 	guest_id [1]
 	seconds [1]
 
-21  - S_NO_CARDS. Sends if player hasn't suspected cards.
+21	- S_NO_CARDS. Sends if player hasn't suspected cards.
 	Params:
 	guest [1]
 	room [1]
 	guest [1]
 	weapon [1]
 
-23  - S_GUESS_SECRET. Some guest try to guess secret cards. If command
+23	- S_GUESS_SECRET. Some guest try to guess secret cards. If command
 	contains only guest id, this mean that player make a mistake.
 	Else it contains also secret cards, so in this case guest is a
 	winner.
@@ -106,7 +106,7 @@ This command mean that client want to enter into room for five players.
 	guest [1]
 	weapon [1]
 
-25  - S_TRANS_GUEST. Move guest at some cell on map without calculating
+25	- S_TRANS_GUEST. Move guest at some cell on map without calculating
 	any path.
 	guest [1]
 	x [1]
@@ -115,21 +115,21 @@ This command mean that client want to enter into room for five players.
 ========================================================================
 	Client side commands
 ========================================================================
-2   - C_ENTER_ROOM. Client want to enter into the room with specified
+2	- C_ENTER_ROOM. Client want to enter into the room with specified
 	players count. Server looks for maximum filled desired room and
 	place player into it. After placing server send to player command
 	S_AVAILABLE_GUESTS. If there is no free desired room server send to
 	client command S_NO_ROOM.
 	Params:
-	count_players [1]   - desired count of players in room. The number
+	count_players [1]	- desired count of players in room. The number
 		into square brackets means count of bytes for this param.
 
-4   - C_LEAVE_ROOM. Client want to leave room. If client wasn't in the
+4	- C_LEAVE_ROOM. Client want to leave room. If client wasn't in the
 	room, nothing happens. If client was in room, he leave it and cannot
 	return. At this moment server simulate player actions in the game:
 	loses the turns and shows cards if they are suspect.
 	
-6   - C_CHOOSE_GUEST. Client want to choose guest. Command will be
+6	- C_CHOOSE_GUEST. Client want to choose guest. Command will be
 	process by server only if players is in room. On success server
 	send S_AVAILABLE_GUESTS for all players in the room (update
 	information). After process this command server send to client
@@ -137,32 +137,32 @@ This command mean that client want to enter into room for five players.
 	Params:
 	guest_id [1]
 
-8   - C_GUEST_MOVE. Client want go to specified coordinates on map. If
+8	- C_GUEST_MOVE. Client want go to specified coordinates on map. If
 	he can do it according to rules server send to all players command
 	S_GUEST_MOVE. If he cannot do it nothing happens.
 	Params:
 	x_coordinate [1]
 	y_coordinate [1]
 
-10  - C_ASK. When player is in room he can suspect murderer and weapon.
+10	- C_ASK. When player is in room he can suspect murderer and weapon.
 	Player cannot ask twice about one room in same turn.
 	Params:
 	guest [1]
 	weapon [1]
 
-12  - C_ANSWER. Player answer on suspect. If param 'card' is negative,
+12	- C_ANSWER. Player answer on suspect. If param 'card' is negative,
 	this means that player has no suspected cards.
 	Params:
 	card [1]
 
-14  - C_GUESS_SECRET. Player suspect secret cards. If he is right, he
+14	- C_GUESS_SECRET. Player suspect secret cards. If he is right, he
 	win the game. Else he lose and server starts to rule his guest.
 	Params:
 	room [1]
 	guest [1]
 	weapon [1]
 
-16  - C_NO_CARDS. Player says that he hasn't any suspected card. If it's
+16	- C_NO_CARDS. Player says that he hasn't any suspected card. If it's
 	true, server send to all players S_NO_CARDS, else nothing happens.
 
-18  - C_END_TURN. Player ends his move.
+18	- C_END_TURN. Player ends his move.

@@ -5,7 +5,7 @@ package view
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	import model.*;
-	
+
 	/**
 	 * ...
 	 * @author bav
@@ -14,7 +14,7 @@ package view
 	{
 		private var _field:TextField;
 		private var _model:Model;
-		
+
 		public function Dice(model:Model) 
 		{
 			_model = model;
@@ -29,17 +29,17 @@ package view
 			_field.defaultTextFormat = new TextFormat("_typewriter", 12, 0, null, null, null, null, null, TextFormatAlign.RIGHT);
 			addChild(_field);
 		}
-		
+
 		private function sGuestMoveHandler(e:CluedoEvent):void 
 		{
 			_field.text = _model.steps.toString();
 		}
-		
+
 		private function nextMoveHandler(e:CluedoEvent):void 
 		{
 			_field.text = _model.steps.toString();
 		}
-		
+
 	}
 
 }

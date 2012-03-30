@@ -4,7 +4,7 @@ package view
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
-	
+
 	/**
 	 * ...
 	 * @author bav
@@ -38,10 +38,10 @@ package view
 		public static const AP_LOUNGE:int = 22;
 		public static const AP_HALL:int = 23;
 		public static const AP_STUDY:int = 24;
-		
+
 		private var _field:TextField;
 		private var _id:int;
-		
+
 		public function Card(id:int) 
 		{
 			_field = new TextField();
@@ -53,12 +53,12 @@ package view
 			this.id = id;
 			addChild(_field);
 		}
-		
+
 		public function get id():int 
 		{
 			return _id;
 		}
-		
+
 		public function set id(value:int):void 
 		{
 			_id = value;
@@ -90,7 +90,7 @@ package view
 				case AP_STUDY: _field.text = "Кабинет"; break;
 			}
 		}
-		
+
 		public static function cardToString(id:int):String
 		{
 			var r:String = "";

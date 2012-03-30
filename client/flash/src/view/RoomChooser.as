@@ -9,7 +9,7 @@ package view
 	import flash.text.TextFormatAlign;
 	import flash.filters.BitmapFilterQuality;
 	import model.*;
-	
+
 	/**
 	 * ...
 	 * @author bav
@@ -17,13 +17,13 @@ package view
 	public class RoomChooser extends Sprite 
 	{
 		private var _model:Model;
-		
+
 		public function RoomChooser(model:Model) 
 		{
 			_model = model;
 			init();
 		}
-		
+
 		private function init():void
 		{
 			var g:Graphics = graphics;
@@ -45,7 +45,7 @@ package view
 			}
 			filters = [new DropShadowFilter(0, 0, 0, 0.6, 5, 5, 2, BitmapFilterQuality.HIGH)];
 		}
-		
+
 		private function buttonClickHandler(e:MouseEvent):void
 		{
 			if (e.target is TextField)
@@ -57,7 +57,7 @@ package view
 				}
 			}
 		}
-		
+
 	}
 
 }

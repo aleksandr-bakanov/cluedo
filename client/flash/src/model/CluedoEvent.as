@@ -28,25 +28,25 @@ package model
 		public static const S_NO_CARDS:String = "s_no_cards";
 		public static const C_NO_CARDS:String = "c_no_cards";
 		public static const C_END_TURN:String = "c_end_turn";
-		
+
 		public var data:Object;
-		
+
 		public function CluedoEvent(type:String, data:Object=null, bubbles:Boolean=false, cancelable:Boolean=false) 
 		{ 
 			super(type, bubbles, cancelable);
 			this.data = data;
 		} 
-		
+
 		public override function clone():Event 
 		{ 
 			return new CluedoEvent(type, data, bubbles, cancelable);
 		} 
-		
+
 		public override function toString():String 
 		{ 
 			return formatToString("CluedoEvent", "type", "bubbles", "cancelable", "eventPhase"); 
 		}
-		
+
 	}
-	
+
 }

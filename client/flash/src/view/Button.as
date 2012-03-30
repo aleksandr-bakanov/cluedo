@@ -4,7 +4,7 @@ package view
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
-	
+
 	/**
 	 * ...
 	 * @author bav
@@ -12,7 +12,7 @@ package view
 	public class Button extends Sprite 
 	{
 		private var _field:TextField;
-		
+
 		public function Button(value:String) 
 		{
 			_field = new TextField();
@@ -24,7 +24,7 @@ package view
 			_field.text = value;
 			addChild(_field);
 		}
-		
+
 	}
 
 }

@@ -6,7 +6,7 @@ package view
 	import flash.events.MouseEvent;
 	import flash.filters.GlowFilter;
 	import model.*;
-	
+
 	/**
 	 * ...
 	 * @author bav
@@ -15,24 +15,24 @@ package view
 	{
 		private var _model:Model;
 		private var _cards:Array /* of Card */;
-		
+
 		public function CardsPanel(model:Model) 
 		{
 			_model = model;
 			configureMovelListeners();
 		}
-		
+
 		private function configureMovelListeners():void 
 		{
 			_model.addEventListener(CluedoEvent.START_WAIT_ANSWER, startWaitAnswerHandler);
 			_model.addEventListener(CluedoEvent.PLAYER_ANSWER, playerAnswerHandler);
 		}
-        
-        private function playerAnswerHandler(e:CluedoEvent):void 
-        {
-            removeGlow();
-        }
-		
+
+		private function playerAnswerHandler(e:CluedoEvent):void 
+		{
+			removeGlow();
+		}
+
 		private function startWaitAnswerHandler(e:CluedoEvent):void 
 		{
 			if (e.data.gt == _model.guest)
@@ -49,33 +49,33 @@ package view
 					}
 				}
 			}
-            else
-                removeGlow();
+			else
+				removeGlow();
 		}
-		
+
 		private function removeGlow():void
 		{
 			var len:int = _cards.length;
 			for (var i:int = 0; i < len; i++)
 			{
 				var c:Card = _cards[i] as Card;
-                if (c)
-                {
-                    if (c.filters.length)
-                        c.filters = [];
-                    if (c.hasEventListener(MouseEvent.CLICK))
-                        c.removeEventListener(MouseEvent.CLICK, cardClickHandler);
-                }
+				if (c)
+				{
+					if (c.filters.length)
+						c.filters = [];
+					if (c.hasEventListener(MouseEvent.CLICK))
+						c.removeEventListener(MouseEvent.CLICK, cardClickHandler);
+				}
 			}
 		}
-		
+
 		private function cardClickHandler(e:MouseEvent):void
 		{
 			var id:int = (e.currentTarget as Card).id;
 			removeGlow();
 			_model.dispatchEvent(new CluedoEvent(CluedoEvent.C_ANSWER, id));
 		}
-		
+
 		public function initCards(cards:Array):void
 		{
 			_cards = [];
@@ -88,7 +88,7 @@ package view
 				addChild(c);
 			}
 		}
-		
+
 	}
 
 }

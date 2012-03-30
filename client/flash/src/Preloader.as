@@ -8,14 +8,14 @@ package
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.utils.getDefinitionByName;
-	
+
 	/**
 	 * ...
 	 * @author bav
 	 */
 	public class Preloader extends MovieClip 
 	{
-		
+
 		public function Preloader() 
 		{
 			if (stage) {
@@ -25,20 +25,20 @@ package
 			addEventListener(Event.ENTER_FRAME, checkFrame);
 			loaderInfo.addEventListener(ProgressEvent.PROGRESS, progress);
 			loaderInfo.addEventListener(IOErrorEvent.IO_ERROR, ioError);
-			
+
 			// TODO show loader
 		}
-		
+
 		private function ioError(e:IOErrorEvent):void 
 		{
 			trace(e.text);
 		}
-		
+
 		private function progress(e:ProgressEvent):void 
 		{
 			// TODO update loader
 		}
-		
+
 		private function checkFrame(e:Event):void 
 		{
 			if (currentFrame == totalFrames) 
@@ -47,24 +47,24 @@ package
 				loadingFinished();
 			}
 		}
-		
+
 		private function loadingFinished():void 
 		{
 			removeEventListener(Event.ENTER_FRAME, checkFrame);
 			loaderInfo.removeEventListener(ProgressEvent.PROGRESS, progress);
 			loaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, ioError);
-			
+
 			// TODO hide loader
-			
+
 			startup();
 		}
-		
+
 		private function startup():void 
 		{
 			var mainClass:Class = getDefinitionByName("CluedoMain") as Class;
 			addChild(new mainClass() as DisplayObject);
 		}
-		
+
 	}
-	
+
 }

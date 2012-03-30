@@ -2,7 +2,7 @@ package view
 {
 	import flash.display.Graphics;
 	import flash.display.Sprite;
-	
+
 	/**
 	 * ...
 	 * @author bav
@@ -13,7 +13,7 @@ package view
 		public var steps:int;
 		public var xc:int;
 		public var yc:int;
-		
+
 		public function Cell(type:String) 
 		{
 			var g:Graphics = graphics;
@@ -43,7 +43,7 @@ package view
 			g.drawRect(0, 0, SIZE, SIZE);
 			g.endFill();
 		}
-		
+
 	}
 
 }
