@@ -1,4 +1,4 @@
-package view 
+package view.game 
 {
 	import flash.display.DisplayObject;
 	import flash.display.InteractiveObject;
@@ -13,10 +13,10 @@ package view
 	 */
 	public class CardsPanel extends Sprite 
 	{
-		private var _model:Model;
+		private var _model:MainModel;
 		private var _cards:Array /* of Card */;
 
-		public function CardsPanel(model:Model) 
+		public function CardsPanel(model:MainModel) 
 		{
 			_model = model;
 			configureMovelListeners();
@@ -24,8 +24,8 @@ package view
 
 		private function configureMovelListeners():void 
 		{
-			_model.addEventListener(CluedoEvent.START_WAIT_ANSWER, startWaitAnswerHandler);
-			_model.addEventListener(CluedoEvent.PLAYER_ANSWER, playerAnswerHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.START_WAIT_ANSWER, startWaitAnswerHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.PLAYER_ANSWER, playerAnswerHandler);
 		}
 
 		private function playerAnswerHandler(e:CluedoEvent):void 
@@ -73,7 +73,7 @@ package view
 		{
 			var id:int = (e.currentTarget as Card).id;
 			removeGlow();
-			_model.dispatchEvent(new CluedoEvent(CluedoEvent.C_ANSWER, id));
+			Dispatcher.instance.dispatchEvent(new CluedoEvent(CluedoEvent.C_ANSWER, id));
 		}
 
 		public function initCards(cards:Array):void

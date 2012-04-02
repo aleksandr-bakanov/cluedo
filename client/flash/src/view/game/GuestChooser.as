@@ -1,4 +1,4 @@
-package view 
+package view.game 
 {
 	import flash.display.DisplayObject;
 	import flash.display.Graphics;
@@ -17,13 +17,13 @@ package view
 	 */
 	public class GuestChooser extends Sprite 
 	{
-		private var _model:Model;
+		private var _model:MainModel;
 		private var _buttons:Array;
 
-		public function GuestChooser(model:Model) 
+		public function GuestChooser(model:MainModel) 
 		{
 			_model = model;
-			_model.addEventListener(CluedoEvent.AVAILABLE_GUESTS, availableGuestsHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.AVAILABLE_GUESTS, availableGuestsHandler);
 			init();
 		}
 
@@ -56,7 +56,7 @@ package view
 		{
 			var gt:int = parseInt((e.currentTarget as DisplayObject).name);
 			if (gt)
-				_model.dispatchEvent(new CluedoEvent(CluedoEvent.CHOOSE_GUEST, gt));
+				Dispatcher.instance.dispatchEvent(new CluedoEvent(CluedoEvent.CHOOSE_GUEST, gt));
 		}
 
 		private function availableGuestsHandler(e:CluedoEvent):void 
@@ -71,7 +71,7 @@ package view
 				g.clear();
 				g.lineStyle(1, 0, 1, true);
 				if (ag & Math.pow(2, i))
-					g.beginFill(Model.COLORS[i]);
+					g.beginFill(MainModel.COLORS[i]);
 				else
 					g.beginFill(0xAAAAAA);
 				g.drawCircle(25, 25, 25);

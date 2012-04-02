@@ -1,10 +1,11 @@
-package view 
+package view.game 
 {
 	import flash.display.InteractiveObject;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.filters.GlowFilter;
 	import model.*;
+	import control.Dispatcher;
 
 	/**
 	 * ...
@@ -42,12 +43,12 @@ package view
 				['#','#','#','#','#','#','#',':','#','#','#','#','#','#','#','#',':','#','#','#','#','#','#','#']
 			];
 		private var _cells:Array;
-		private var _model:Model;
+		private var _model:MainModel;
 		private var _guests:Array;
 		private var _guestsCon:Sprite;
 		private var _glowed:Array;
 
-		public function Map(model:Model) 
+		public function Map(model:MainModel) 
 		{
 			_model = model;
 			_glowed = [];
@@ -87,7 +88,7 @@ package view
 		private function checkStepsHandler(e:CluedoEvent):void 
 		{
 			if (MAP[_model.y][_model.x] != ':')
-				_model.dispatchEvent(new CluedoEvent(CluedoEvent.SHOW_ENQUIRE_PANEL, getAppByCoordinates(_model.x, _model.y)));
+				Dispatcher.instance.dispatchEvent(new CluedoEvent(CluedoEvent.SHOW_ENQUIRE_PANEL, getAppByCoordinates(_model.x, _model.y)));
 			else if ((_guests.indexOf(e.currentTarget) + 1) == _model.guest && _model.steps && MAP[_model.y][_model.x] == ':')
 				glowCells(_model.x, _model.y, _model.steps);
 		}
@@ -119,9 +120,9 @@ package view
 
 		private function configureModelListeners():void
 		{
-			_model.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
-			_model.addEventListener(CluedoEvent.S_GUEST_MOVE, sGuestMoveHandler);
-			_model.addEventListener(CluedoEvent.TRANS_GUEST, transGuestHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.S_GUEST_MOVE, sGuestMoveHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.TRANS_GUEST, transGuestHandler);
 		}
 
 		private function transGuestHandler(e:CluedoEvent):void 
@@ -306,7 +307,7 @@ package view
 		{
 			var c:Cell = e.target as Cell;
 			unglowCells();
-			_model.dispatchEvent(new CluedoEvent(CluedoEvent.C_GUEST_MOVE, { x:c.xc, y:c.yc } ));
+			Dispatcher.instance.dispatchEvent(new CluedoEvent(CluedoEvent.C_GUEST_MOVE, { x:c.xc, y:c.yc } ));
 		}
 
 	}

@@ -16,9 +16,9 @@ package
 	[Frame(factoryClass="Preloader")]
 	public class CluedoMain extends Sprite 
 	{
-		private static var _output:TextField;
+		/*private static var _output:TextField;
 		private var _connector:Connector;
-		private var _model:Model;
+		private var _model:MainModel;
 		private var _roomChooser:RoomChooser;
 		private var _guestChooser:GuestChooser;
 		private var _orderPanel:OrderPanel;
@@ -30,7 +30,7 @@ package
 		private var _enquirePanel:EnquirePanel;
 		private var _guessSecretPanel:GuessSecretPanel;
 		private var _noCardsButton:Button;
-		private var _endTurnButton:Button;
+		private var _endTurnButton:Button;*/
 
 		public function CluedoMain():void 
 		{
@@ -41,8 +41,11 @@ package
 		private function init(e:Event = null):void 
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
-			configureOutput();
-			_model = new Model();
+			
+			new MainController(this);
+			
+			/*configureOutput();
+			_model = new MainModel();
 			configureModelListeners();
 			_roomChooser = new RoomChooser(_model);
 			_guestChooser = new GuestChooser(_model);
@@ -61,20 +64,20 @@ package
 			_noCardsButton.addEventListener(MouseEvent.CLICK, noCardsHandler);
 			_endTurnButton = new Button("End turn");
 			_endTurnButton.addEventListener(MouseEvent.CLICK, endTurnHandler);
-			_connector = new Connector(_model, stage.loaderInfo.parameters.host, stage.loaderInfo.parameters.port);
+			_connector = new Connector(_model, stage.loaderInfo.parameters.host, stage.loaderInfo.parameters.port);*/
 		}
 
-		private function configureModelListeners():void
+		/*private function configureModelListeners():void
 		{
-			_model.addEventListener(CluedoEvent.CONNECT, connectHandler);
-			_model.addEventListener(CluedoEvent.AVAILABLE_GUESTS, availableGuestHandler);
-			_model.addEventListener(CluedoEvent.INIT_GAME, initGameHandler);
-			_model.addEventListener(CluedoEvent.SHOW_ENQUIRE_PANEL, showEnquirePanel);
-			_model.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
-			_model.addEventListener(CluedoEvent.END_GAME, endGameHandler);
-			_model.addEventListener(CluedoEvent.PLAYER_ANSWER, playerAnswerHandler);
-			_model.addEventListener(CluedoEvent.START_WAIT_ANSWER, startWaitAnswerHandler);
-			_model.addEventListener(CluedoEvent.S_NO_CARDS, playerAnswerHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.CONNECT, connectHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.AVAILABLE_GUESTS, availableGuestHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.INIT_GAME, initGameHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.SHOW_ENQUIRE_PANEL, showEnquirePanel);
+			Dispatcher.instance.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.END_GAME, endGameHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.PLAYER_ANSWER, playerAnswerHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.START_WAIT_ANSWER, startWaitAnswerHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.S_NO_CARDS, playerAnswerHandler);
 		}
 
 		private function connectHandler(e:CluedoEvent):void 
@@ -226,7 +229,7 @@ package
 
 		private function noCardsHandler(e:MouseEvent):void
 		{
-			_model.dispatchEvent(new CluedoEvent(CluedoEvent.C_NO_CARDS));
+			Dispatcher.instance.dispatchEvent(new CluedoEvent(CluedoEvent.C_NO_CARDS));
 		}
 
 		private function endTurnHandler(e:MouseEvent):void
@@ -235,7 +238,7 @@ package
 				removeChild(_enquirePanel);
 			if (contains(_guessSecretPanel))
 				removeChild(_guessSecretPanel);
-			_model.dispatchEvent(new CluedoEvent(CluedoEvent.C_END_TURN));
+			Dispatcher.instance.dispatchEvent(new CluedoEvent(CluedoEvent.C_END_TURN));
 		}
 
 		private function configureOutput():void 
@@ -253,7 +256,7 @@ package
 		{
 			_output.appendText(String(obj) + '\n');
 			_output.scrollV = _output.maxScrollV;
-		}
+		}*/
 
 	}
 

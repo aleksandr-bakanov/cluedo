@@ -1,4 +1,4 @@
-package view 
+package view.game 
 {
 	import flash.display.Sprite;
 	import flash.text.TextField;
@@ -13,13 +13,13 @@ package view
 	public class Dice extends Sprite 
 	{
 		private var _field:TextField;
-		private var _model:Model;
+		private var _model:MainModel;
 
-		public function Dice(model:Model) 
+		public function Dice(model:MainModel) 
 		{
 			_model = model;
-			_model.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
-			_model.addEventListener(CluedoEvent.S_GUEST_MOVE, sGuestMoveHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.S_GUEST_MOVE, sGuestMoveHandler);
 			
 			_field = new TextField();
 			_field.height = 20;

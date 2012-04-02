@@ -1,4 +1,4 @@
-package view 
+package view.game 
 {
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
@@ -17,9 +17,9 @@ package view
 		private var _field:TextField;
 		private var _timer:Timer;
 		private var _seconds:int;
-		private var _model:Model;
+		private var _model:MainModel;
 
-		public function Clock(model:Model) 
+		public function Clock(model:MainModel) 
 		{
 			_model = model;
 			
@@ -38,14 +38,14 @@ package view
 
 		public function addNormalClockListeners():void
 		{
-			_model.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
-			_model.addEventListener(CluedoEvent.END_GAME, endGameHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.END_GAME, endGameHandler);
 		}
 
 		public function addWaitAnswerClockListeners():void
 		{
-			_model.addEventListener(CluedoEvent.START_WAIT_ANSWER, nextMoveHandler);
-			_model.addEventListener(CluedoEvent.END_GAME, endGameHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.START_WAIT_ANSWER, nextMoveHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.END_GAME, endGameHandler);
 		}
 
 		private function endGameHandler(e:CluedoEvent):void 

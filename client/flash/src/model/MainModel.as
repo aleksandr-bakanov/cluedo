@@ -3,10 +3,10 @@ package model
 	import flash.events.EventDispatcher;
 	
 	/**
-	 * ...
+	 * Main application model
 	 * @author bav
 	 */
-	public class Model extends EventDispatcher 
+	public class MainModel extends EventDispatcher 
 	{
 		public static const COLORS:Array = [0xFF0000, 0xFFFF00, 0xFFFFFF, 0x00FF00, 0x0000FF, 0xFF00FF];
 
@@ -23,7 +23,7 @@ package model
 
 		public var curGuest:int;
 
-		public function Model() 
+		public function MainModel() 
 		{
 
 		}

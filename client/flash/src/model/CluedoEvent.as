@@ -29,6 +29,8 @@ package model
 		public static const C_NO_CARDS:String = "c_no_cards";
 		public static const C_END_TURN:String = "c_end_turn";
 
+		public static const RESOURCES_READY:String = "resources_ready";
+
 		public var data:Object;
 
 		public function CluedoEvent(type:String, data:Object=null, bubbles:Boolean=false, cancelable:Boolean=false) 

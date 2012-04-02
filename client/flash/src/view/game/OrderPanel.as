@@ -1,4 +1,4 @@
-package view 
+package view.game 
 {
 	import flash.display.Graphics;
 	import flash.display.Sprite;
@@ -10,13 +10,13 @@ package view
 	 */
 	public class OrderPanel extends Sprite 
 	{
-		private var _model:Model;
+		private var _model:MainModel;
 		private var _marker:Sprite;
 
-		public function OrderPanel(model:Model) 
+		public function OrderPanel(model:MainModel) 
 		{
 			_model = model;
-			_model.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
+			Dispatcher.instance.addEventListener(CluedoEvent.NEXT_MOVE, nextMoveHandler);
 			_marker = new Sprite();
 			_marker.graphics.lineStyle(1, 0, 1, true);
 			_marker.graphics.drawRect(0, 0, 30, 30);
@@ -43,7 +43,7 @@ package view
 			{
 				var index:int = order[i] > 10 ? order[i] - 10 : order[i];
 				g.lineStyle(1);
-				g.beginFill(Model.COLORS[index - 1]);
+				g.beginFill(MainModel.COLORS[index - 1]);
 				g.drawRect(20 + 60 * i, 10, 20, 20);
 				g.endFill();
 			}

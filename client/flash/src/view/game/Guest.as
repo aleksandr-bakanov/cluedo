@@ -1,4 +1,4 @@
-package view 
+package view.game 
 {
 	import flash.display.Graphics;
 	import flash.display.Sprite;
@@ -16,9 +16,9 @@ package view
 		private var _path:Array;
 		private var _timer:Timer;
 		private var _id:int;
-		private var _model:Model;
+		private var _model:MainModel;
 
-		public function Guest(model:Model, id:int) 
+		public function Guest(model:MainModel, id:int) 
 		{
 			_id = id;
 			_model = model;
@@ -27,7 +27,7 @@ package view
 			_path = [];
 			var g:Graphics = graphics;
 			g.lineStyle(1);
-			g.beginFill(Model.COLORS[id > 10 ? id - 11 : id - 1]);
+			g.beginFill(MainModel.COLORS[id > 10 ? id - 11 : id - 1]);
 			g.drawCircle(Cell.SIZE / 2, Cell.SIZE / 2, Cell.SIZE / 3);
 			mouseChildren = mouseEnabled = false;
 		}

@@ -1,4 +1,4 @@
-package view 
+package view.game 
 {
 	import flash.display.Graphics;
 	import flash.display.Sprite;
@@ -16,9 +16,9 @@ package view
 	 */
 	public class RoomChooser extends Sprite 
 	{
-		private var _model:Model;
+		private var _model:MainModel;
 
-		public function RoomChooser(model:Model) 
+		public function RoomChooser(model:MainModel) 
 		{
 			_model = model;
 			init();
@@ -53,7 +53,7 @@ package view
 				var type:int = parseInt((e.target as TextField).text);
 				if (type)
 				{
-					_model.dispatchEvent(new CluedoEvent(CluedoEvent.ENTER_ROOM, type));
+					Dispatcher.instance.dispatchEvent(new CluedoEvent(CluedoEvent.ENTER_ROOM, type));
 				}
 			}
 		}
